@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}Result Management System SaaS{% endblock %}
+
+{% block content %}
+<div class="public-landing">
+    
+    <!-- Hero Section -->
+    <section class="text-center py-5 my-5">
+        <div class="container">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3 fw-semibold">
+                <i class="bi bi-rocket-takeoff-fill me-1"></i> Version 2.1 is now live
+            </span>
+            <h1 class="display-3 font-heading fw-bold text-dark mb-3">
+                Modern Result Management <br>
+                <span class="text-primary">for Modern Institutions</span>
+            </h1>
+            <p class="lead text-muted mx-auto mb-5" style="max-width: 700px;">
+                Manage students, examinations, marks, results, and academic performance from one secure, multi-tenant SaaS platform. Built for schools, colleges, and major universities.
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg px-4 py-3 fw-semibold shadow-sm" style="border-radius: var(--radius-md);">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                </a>
+                <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-4 py-3 fw-semibold shadow" style="border-radius: var(--radius-md);">
+                    Start Free Trial <i class="bi bi-arrow-right-short ms-1 fs-5 align-middle"></i>
+                </a>
+                <a href="{% url 'contact' %}" class="btn btn-outline-secondary btn-lg px-4 py-3 fw-semibold" style="border-radius: var(--radius-md);">
+                    Book Demo <i class="bi bi-calendar-event ms-1 fs-6 align-middle"></i>
+                </a>
+            </div>
+            
+            <!-- Dashboard Preview Mockup (Built with CSS) -->
+            <div class="mt-5 pt-3 position-relative mx-auto rounded shadow-lg border p-2 bg-light" style="max-width: 900px; border-radius: var(--radius-lg);">
+                <div class="d-flex align-items-center gap-1.5 px-3 py-2 border-bottom bg-white" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                    <span class="bg-danger rounded-circle d-inline-block" style="width: 10px; height: 10px;"></span>
+                    <span class="bg-warning rounded-circle d-inline-block" style="width: 10px; height: 10px;"></span>
+                    <span class="bg-success rounded-circle d-inline-block" style="width: 10px; height: 10px;"></span>
+                    <span class="text-muted ms-3 font-monospace" style="font-size: 0.75rem;">portal.rmssaas.com/dashboard/</span>
+                </div>
+                <div class="p-3 bg-white text-start" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                    <div class="row g-3">
+                        <!-- Stat Card 1 -->
+                        <div class="col-md-3">
+                            <div class="p-3 border rounded shadow-sm">
+                                <small class="text-muted d-block">Total Students</small>
+                                <span class="h3 fw-bold">4,250</span>
+                                <span class="text-success fs-7 d-block"><i class="bi bi-arrow-up"></i> +12% this year</span>
+                            </div>
+                        </div>
+                        <!-- Stat Card 2 -->
+                        <div class="col-md-3">
+                            <div class="p-3 border rounded shadow-sm">
+                                <small class="text-muted d-block">Active Exams</small>
+                                <span class="h3 fw-bold">12</span>
+                                <span class="text-primary fs-7 d-block">Ongoing Sessions</span>
+                            </div>
+                        </div>
+                        <!-- Stat Card 3 -->
+                        <div class="col-md-3">
+                            <div class="p-3 border rounded shadow-sm">
+                                <small class="text-muted d-block">Pending Marks Approval</small>
+                                <span class="h3 fw-bold text-warning">45</span>
+                                <span class="text-muted fs-7 d-block">Requires HOD Action</span>
+                            </div>
+                        </div>
+                        <!-- Stat Card 4 -->
+                        <div class="col-md-3">
+                            <div class="p-3 border rounded shadow-sm bg-primary text-white">
+                                <small class="text-white text-opacity-75 d-block">Result Pass Rate</small>
+                                <span class="h3 fw-bold">94.8%</span>
+                                <span class="text-white text-opacity-75 fs-7 d-block">Overall Average</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features Section -->
+    <section class="bg-white py-5 border-top border-bottom">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="font-heading fw-bold">Comprehensive Tools for Academic Excellence</h2>
+                <p class="text-muted">Everything you need to manage your institution's result workflow</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-3 h-100" style="border-radius: var(--radius-lg) !important;">
+                        <i class="bi bi-shield-check fs-2 text-primary mb-3 d-block"></i>
+                        <h4 class="font-heading fw-semibold">Tenant Data Isolation</h4>
+                        <p class="text-muted">Separate institutions have completely isolated databases and tables, ensuring student and marks confidentiality at all levels.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-3 h-100" style="border-radius: var(--radius-lg) !important;">
+                        <i class="bi bi-people-fill fs-2 text-primary mb-3 d-block"></i>
+                        <h4 class="font-heading fw-semibold">Role-Based Permission</h4>
+                        <p class="text-muted">Granular access control policies for Super Admin, Institution Admin, Controller, HOD, Faculty, and Student portals.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-3 h-100" style="border-radius: var(--radius-lg) !important;">
+                        <i class="bi bi-calculator fs-2 text-primary mb-3 d-block"></i>
+                        <h4 class="font-heading fw-semibold">Automated Result Engine</h4>
+                        <p class="text-muted">Dynamically calculate percentages, letter grades, credit weights, SGPA, and cumulative CGPA according to institutional policy.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-3 h-100" style="border-radius: var(--radius-lg) !important;">
+                        <i class="bi bi-file-earmark-pdf-fill fs-2 text-primary mb-3 d-block"></i>
+                        <h4 class="font-heading fw-semibold">Marksheets & Transcripts</h4>
+                        <p class="text-muted">Generate official, print-friendly marksheets and multi-semester transcripts with custom QR verification codes.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-3 h-100" style="border-radius: var(--radius-lg) !important;">
+                        <i class="bi bi-arrow-repeat fs-2 text-primary mb-3 d-block"></i>
+                        <h4 class="font-heading fw-semibold">Revaluation & Backlogs</h4>
+                        <p class="text-muted">Manage applications for paper re-checking, handle payments, and automatically track and register backlog subjects.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-3 h-100" style="border-radius: var(--radius-lg) !important;">
+                        <i class="bi bi-graph-up-arrow fs-2 text-primary mb-3 d-block"></i>
+                        <h4 class="font-heading fw-semibold">Analytics & Reports</h4>
+                        <p class="text-muted">Visual charts mapping student pass/fail trends, subject averages, and department rank logs. Export data to PDF/Excel.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="font-heading fw-bold">Flexible Plans for Every Scale</h2>
+                <p class="text-muted">Choose the perfect tier for your student database</p>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                <!-- Plan 1 -->
+                <div class="col-md-4 col-lg-3">
+                    <div class="rms-card p-4 text-center h-100 bg-white">
+                        <h5 class="fw-bold mb-2">Starter</h5>
+                        <p class="text-muted" style="font-size: 0.8rem;">For schools / small centers</p>
+                        <h3 class="fw-bold mb-3">₹49<span class="fs-6 text-muted font-monospace">/mo</span></h3>
+                        <hr>
+                        <ul class="list-unstyled text-start mb-4" style="font-size: 0.85rem; line-height: 2;">
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> Up to 500 Students</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> Up to 50 Faculty</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> 10 GB Secure Storage</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> Basic Reports & PDFs</li>
+                        </ul>
+                        <a href="{% url 'register' %}" class="btn btn-outline-primary w-100 fw-semibold mt-auto" style="border-radius: var(--radius-md);">Start Trial</a>
+                    </div>
+                </div>
+                
+                <!-- Plan 2 -->
+                <div class="col-md-4 col-lg-3">
+                    <div class="rms-card p-4 text-center h-100 bg-white border-primary border-2 position-relative">
+                        <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-primary">Popular</span>
+                        <h5 class="fw-bold mb-2 text-primary">Growth</h5>
+                        <p class="text-muted" style="font-size: 0.8rem;">For colleges & institutions</p>
+                        <h3 class="fw-bold mb-3">₹149<span class="fs-6 text-muted font-monospace">/mo</span></h3>
+                        <hr>
+                        <ul class="list-unstyled text-start mb-4" style="font-size: 0.85rem; line-height: 2;">
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> Up to 5,000 Students</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> Up to 250 Faculty</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> 50 GB Secure Storage</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> Detailed Analytics Charts</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> Excel Imports / Exports</li>
+                        </ul>
+                        <a href="{% url 'register' %}" class="btn btn-primary w-100 fw-semibold mt-auto shadow" style="border-radius: var(--radius-md);">Start Trial</a>
+                    </div>
+                </div>
+
+                <!-- Plan 3 -->
+                <div class="col-md-4 col-lg-3">
+                    <div class="rms-card p-4 text-center h-100 bg-white">
+                        <h5 class="fw-bold mb-2">Professional</h5>
+                        <p class="text-muted" style="font-size: 0.8rem;">For standard universities</p>
+                        <h3 class="fw-bold mb-3">₹299<span class="fs-6 text-muted font-monospace">/mo</span></h3>
+                        <hr>
+                        <ul class="list-unstyled text-start mb-4" style="font-size: 0.85rem; line-height: 2;">
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> Up to 20,000 Students</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> Up to 1,000 Faculty</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> 200 GB Secure Storage</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> Advanced API Endpoints</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i> Priority 24/7 support</li>
+                        </ul>
+                        <a href="{% url 'register' %}" class="btn btn-outline-primary w-100 fw-semibold mt-auto" style="border-radius: var(--radius-md);">Start Trial</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-5 bg-white border-top">
+        <div class="container py-4" style="max-width: 800px;">
+            <div class="text-center mb-5">
+                <h2 class="font-heading fw-bold">Frequently Asked Questions</h2>
+                <p class="text-muted">Have queries? Find answers to commonly asked questions.</p>
+            </div>
+            
+            <div class="accordion accordion-flush border rounded shadow-sm" id="faqAccordion" style="border-radius: var(--radius-lg); overflow: hidden;">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            How does multi-tenant data isolation work?
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            Every institution signed up on the platform is assigned a unique <code>institution_id</code>. All relational data (students, faculty, courses, marks) is bound to this ID. Custom query filters are enforced globally at the database manager level so that one institution can never query or modify data belonging to another.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Can we configure our own custom grading system?
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            Yes! Each institution's dashboard settings panel allows defining letter grades (like A+, A, B) and mapping them to specific grade points. The result engine dynamically references this mapping, making it highly customizable.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            What happens when a student fails a subject?
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            If a student's marks in a subject fall below the configured passing marks, the Result Engine automatically flags that subject. A new backlog record is generated, which links directly to the student portal so they can track attempts and register for supplementary examinations.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="py-5 text-center my-4 bg-primary text-white p-5 rounded-4 shadow mx-auto" style="max-width: 900px; border-radius: var(--radius-lg) !important;">
+        <h2 class="font-heading fw-bold mb-3">Ready to Upgrade Your Result Management?</h2>
+        <p class="mb-4 text-white text-opacity-80 mx-auto" style="max-width: 600px;">
+            Join modern colleges and universities using RMS SaaS to streamline exam scheduling, grade entries, and transcript prints.
+        </p>
+        <a href="{% url 'register' %}" class="btn btn-light btn-lg px-4 py-2.5 fw-semibold text-primary" style="border-radius: var(--radius-md);">
+            Start Your 14-Day Free Trial
+        </a>
+    </section>
+
+</div>
+{% endblock %}

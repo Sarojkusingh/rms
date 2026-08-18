@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="rms-card">
+            <h4 class="mb-4 font-heading fw-semibold border-bottom pb-2">{{ title }}</h4>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <!-- Section 1: Security Login -->
+                {% if not faculty %}
+                <h5 class="text-primary font-heading mb-3" style="font-size: 1.1rem;"><i class="bi bi-person-lock me-2"></i>1. Portal Security Login</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="username" class="form-label fw-semibold">Username</label>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Select unique username" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="email" class="form-label fw-semibold">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="faculty@domain.edu" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="password" class="form-label fw-semibold">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter secure password" required>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Section 2: Personal Details -->
+                <h5 class="text-primary font-heading mb-3 {% if not faculty %}border-top pt-3{% endif %}" style="font-size: 1.1rem;"><i class="bi bi-person-fill me-2"></i>{% if faculty %}1.{% else %}2.{% endif %} Personal details</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="first_name" class="form-label fw-semibold">First Name</label>
+                        <input type="text" id="first_name" name="first_name" class="form-control" value="{{ faculty.user.first_name|default:'' }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="last_name" class="form-label fw-semibold">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" class="form-control" value="{{ faculty.user.last_name|default:'' }}" required>
+                    </div>
+                    {% if faculty %}
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label fw-semibold">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" value="{{ faculty.user.email }}" required>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Section 3: Professional Mappings -->
+                <h5 class="text-primary font-heading mb-3 border-top pt-3" style="font-size: 1.1rem;"><i class="bi bi-briefcase-fill me-2"></i>{% if faculty %}2.{% else %}3.{% endif %} Professional details</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="employee_id" class="form-label fw-semibold">Employee ID</label>
+                        <input type="text" id="employee_id" name="employee_id" class="form-control" value="{{ faculty.employee_id|default:'' }}" {% if faculty %}readonly{% endif %} required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="department" class="form-label fw-semibold">Department</label>
+                        <select id="department" name="department" class="form-select" required>
+                            <option value="">Select Department</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.id }}" {% if faculty.department.id == dept.id %}selected{% endif %}>{{ dept.code }} - {{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="designation" class="form-label fw-semibold">Designation</label>
+                        <input type="text" id="designation" name="designation" class="form-control" placeholder="e.g. Assistant Professor" value="{{ faculty.designation|default:'' }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="qualification" class="form-label fw-semibold">Qualification</label>
+                        <input type="text" id="qualification" name="qualification" class="form-control" placeholder="e.g. Ph.D. in Computer Science" value="{{ faculty.qualification|default:'' }}">
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label for="joining_date" class="form-label fw-semibold">Joining Date</label>
+                        <input type="date" id="joining_date" name="joining_date" class="form-control" value="{{ faculty.joining_date|date:'Y-m-d' }}">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                    <a href="{% url 'faculty_list' %}" class="btn btn-light fw-semibold">Cancel</a>
+                    {% if not faculty %}
+                        <button type="submit" name="add_another" class="btn btn-outline-secondary fw-semibold">Save & Add Another</button>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">Save Faculty Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

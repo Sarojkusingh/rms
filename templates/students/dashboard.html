@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Student Portal{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Student Portal</h2>
+    <p class="text-muted m-0">Welcome back, {{ student.user.get_full_name|default:student.user.username }}. Review your academic standing.</p>
+</div>
+
+<!-- Student Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">CUMULATIVE CGPA</small>
+            <span class="fs-2 fw-bold text-primary">{{ history.cgpa|default:latest_result.cgpa|default:0.0|floatformat:2 }}</span>
+            <a href="{% url 'student_results' %}" class="d-block mt-2 fs-7 text-decoration-none">View Details →</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">COMPLETED CREDITS</small>
+            <span class="fs-2 fw-bold text-success">{{ history.total_credits_completed|default:latest_result.earned_credits|default:0 }}</span>
+            <span class="d-block mt-2 fs-7 text-muted">Accumulated weight</span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm bg-danger bg-opacity-10 border-danger border-opacity-25">
+            <small class="text-danger fw-semibold d-block mb-1">ACTIVE BACKLOGS</small>
+            <span class="fs-2 fw-bold text-danger">{{ active_backlogs_count }}</span>
+            <span class="d-block mt-2 fs-7 text-muted">Unresolved papers</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Student Details Card -->
+    <div class="col-lg-6">
+        <div class="rms-card p-4 h-100">
+            <h5 class="fw-bold font-heading mb-3 border-bottom pb-2">Academic Registration Details</h5>
+            <div class="row mb-2">
+                <div class="col-5 text-muted">Roll Number:</div>
+                <div class="col-7 fw-semibold font-monospace">{{ student.student_id }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-5 text-muted">Registration Number:</div>
+                <div class="col-7 font-monospace">{{ student.registration_number|default:"N/A" }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-5 text-muted">Degree Program:</div>
+                <div class="col-7">{{ student.program.name }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-5 text-muted">Department:</div>
+                <div class="col-7">{{ student.department.name }}</div>
+            </div>
+            <div class="row">
+                <div class="col-5 text-muted">Active Semester:</div>
+                <div class="col-7">Semester {{ student.semester.number }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Quick Links -->
+    <div class="col-lg-6">
+        <div class="rms-card p-4 h-100">
+            <h5 class="fw-bold font-heading mb-3 border-bottom pb-2">My Student Links</h5>
+            <div class="d-grid gap-2">
+                <a href="{% url 'student_results' %}" class="btn btn-outline-primary py-3 fw-semibold text-start shadow-sm">
+                    <i class="bi bi-file-earmark-check fs-4 me-2 align-middle"></i> View My Published Marksheets
+                </a>
+                <a href="{% url 'exam_registration_list' %}" class="btn btn-outline-primary py-3 fw-semibold text-start shadow-sm">
+                    <i class="bi bi-card-checklist fs-4 me-2 align-middle"></i> View Registered Exam Admit Cards
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

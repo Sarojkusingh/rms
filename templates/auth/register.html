@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register Institution{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 90vh; padding: 2rem 0;">
+    <div class="col-md-8 col-lg-6">
+        
+        <div class="text-center mb-4">
+            <i class="bi bi-mortarboard-fill text-primary" style="font-size: 3rem;"></i>
+            <h2 class="mt-2 font-heading fw-bold">RMS SaaS Onboarding</h2>
+            <p class="text-muted">Register your college or university to manage results and students</p>
+        </div>
+
+        <div class="rms-card p-4">
+            <h4 class="mb-4 font-heading fw-semibold border-bottom pb-2">Institution Registration</h4>
+            
+            <form method="POST" action="{% url 'register' %}">
+                {% csrf_token %}
+                
+                <h5 class="font-heading text-primary mb-3" style="font-size: 1.1rem;"><i class="bi bi-building me-2"></i>1. Institution Info</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_institution_name" class="form-label fw-medium">Institution Name</label>
+                        {{ form.institution_name }}
+                        {% if form.institution_name.errors %}
+                            <div class="text-danger mt-1 small">{{ form.institution_name.errors.as_text }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_institution_slug" class="form-label fw-medium">Subdomain / Slug</label>
+                        {{ form.institution_slug }}
+                        <small class="text-muted">Used for your institution portal URL (e.g., standard: <code>stanford</code>)</small>
+                        {% if form.institution_slug.errors %}
+                            <div class="text-danger mt-1 small">{{ form.institution_slug.errors.as_text }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="id_contact_email" class="form-label fw-medium">Official Contact Email</label>
+                    {{ form.contact_email }}
+                    {% if form.contact_email.errors %}
+                        <div class="text-danger mt-1 small">{{ form.contact_email.errors.as_text }}</div>
+                    {% endif %}
+                </div>
+
+                <h5 class="font-heading text-primary mb-3 border-top pt-3" style="font-size: 1.1rem;"><i class="bi bi-person-badge me-2"></i>2. Administrator Account</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_username" class="form-label fw-medium">Admin Username</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="text-danger mt-1 small">{{ form.username.errors.as_text }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_email" class="form-label fw-medium">Admin Email Address</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger mt-1 small">{{ form.email.errors.as_text }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_password" class="form-label fw-medium">Password</label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <div class="text-danger mt-1 small">{{ form.password.errors.as_text }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_password_confirm" class="form-label fw-medium">Confirm Password</label>
+                        {{ form.password_confirm }}
+                        {% if form.password_confirm.errors %}
+                            <div class="text-danger mt-1 small">{{ form.password_confirm.errors.as_text }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2.5 fw-semibold" style="border-radius: var(--radius-md);">
+                    Create Account & Start 14-Day Free Trial <i class="bi bi-arrow-right-short ms-1 fs-5 align-middle"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="text-center mt-3">
+            <span class="text-muted">Already registered?</span>
+            <a href="{% url 'login' %}" class="text-primary text-decoration-none fw-semibold ms-1">
+                Log In
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

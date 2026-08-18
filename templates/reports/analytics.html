@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Institutional Analytics{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Performance Analytics</h2>
+    <p class="text-muted m-0">Review visual charts mapping student pass rates, grade metrics, and department benchmarks</p>
+</div>
+
+<!-- Key Highlights -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="rms-card p-3 mb-0 text-center">
+            <small class="text-muted d-block mb-1">TOTAL PUBLISHED RESULT CARDS</small>
+            <span class="fs-2 fw-bold text-dark">{{ total }}</span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="rms-card p-3 mb-0 text-center bg-success bg-opacity-10">
+            <small class="text-success fw-medium d-block mb-1">TOTAL STUDENT PASS RECORDS</small>
+            <span class="fs-2 fw-bold text-success">{{ pass }}</span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="rms-card p-3 mb-0 text-center bg-danger bg-opacity-10">
+            <small class="text-danger fw-medium d-block mb-1">TOTAL STUDENT FAIL RECORDS</small>
+            <span class="fs-2 fw-bold text-danger">{{ fail }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Chart 1: Pass vs Fail (Doughnut) -->
+    <div class="col-lg-6">
+        <div class="rms-card h-100 p-4">
+            <h5 class="fw-bold font-heading mb-4 border-bottom pb-2">Pass vs Fail Ratio</h5>
+            <div style="height: 300px; position: relative;">
+                <canvas id="passFailChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 2: Grade Distribution (Bar) -->
+    <div class="col-lg-6">
+        <div class="rms-card h-100 p-4">
+            <h5 class="fw-bold font-heading mb-4 border-bottom pb-2">Letter Grade Distribution</h5>
+            <div style="height: 300px; position: relative;">
+                <canvas id="gradesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 3: Department Performance (Horizontal Bar) -->
+    <div class="col-12">
+        <div class="rms-card p-4">
+            <h5 class="fw-bold font-heading mb-4 border-bottom pb-2">Department Average SGPA comparison</h5>
+            <div style="height: 350px; position: relative;">
+                <canvas id="deptsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Raw data serialization scripts -->
+{{ pass|json_script:"data-pass" }}
+{{ fail|json_script:"data-fail" }}
+{{ grades|json_script:"data-grades" }}
+{{ grade_counts|json_script:"data-grade-counts" }}
+{{ dept_names|json_script:"data-dept-names" }}
+{{ dept_sgpas|json_script:"data-dept-sgpas" }}
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Read JSON script inputs
+        const passCount = JSON.parse(document.getElementById('data-pass').textContent);
+        const failCount = JSON.parse(document.getElementById('data-fail').textContent);
+        const gradesLabels = JSON.parse(document.getElementById('data-grades').textContent);
+        const gradesCounts = JSON.parse(document.getElementById('data-grade-counts').textContent);
+        const deptNames = JSON.parse(document.getElementById('data-dept-names').textContent);
+        const deptSgpas = JSON.parse(document.getElementById('data-dept-sgpas').textContent);
+
+        // 1. Pass vs Fail Doughnut
+        new Chart(document.getElementById('passFailChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Pass', 'Fail'],
+                datasets: [{
+                    data: [passCount, failCount],
+                    backgroundColor: ['#10b981', '#ef4444'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // 2. Grades Distribution Bar
+        new Chart(document.getElementById('gradesChart'), {
+            type: 'bar',
+            data: {
+                labels: gradesLabels,
+                datasets: [{
+                    label: 'Occurrences Count',
+                    data: gradesCounts,
+                    backgroundColor: '#4f46e5',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // 3. Department SGPA comparison Horizontal Bar
+        new Chart(document.getElementById('deptsChart'), {
+            type: 'bar',
+            data: {
+                labels: deptNames,
+                datasets: [{
+                    label: 'Average SGPA',
+                    data: deptSgpas,
+                    backgroundColor: '#06b6d4',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { beginAtZero: true, max: 10 }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

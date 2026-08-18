@@ -1,0 +1,237 @@
+{% if user.is_super_admin %}
+    <!-- Super Admin Sidebar -->
+    <li class="sidebar-nav-item">
+        <a href="{% url 'superadmin_dashboard' %}" class="sidebar-nav-link">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+    </li>
+    <li class="sidebar-nav-item">
+        <a href="{% url 'superadmin_institutions' %}" class="sidebar-nav-link">
+            <i class="bi bi-building"></i> Institutions
+        </a>
+    </li>
+    <li class="sidebar-nav-item">
+        <a href="{% url 'superadmin_plans' %}" class="sidebar-nav-link">
+            <i class="bi bi-tags-fill"></i> Plans
+        </a>
+    </li>
+    <li class="sidebar-nav-item">
+        <a href="{% url 'superadmin_subscriptions' %}" class="sidebar-nav-link">
+            <i class="bi bi-card-checklist"></i> Subscriptions
+        </a>
+    </li>
+    <li class="sidebar-nav-item">
+        <a href="{% url 'superadmin_payments' %}" class="sidebar-nav-link">
+            <i class="bi bi-cash-stack"></i> Payments
+        </a>
+    </li>
+    <li class="sidebar-nav-item">
+        <a href="{% url 'notifications_list' %}" class="sidebar-nav-link">
+            <i class="bi bi-bell"></i> Notifications
+            {% if unread_notifications_count > 0 %}
+                <span class="badge bg-danger ms-auto">{{ unread_notifications_count }}</span>
+            {% endif %}
+        </a>
+    </li>
+    <li class="sidebar-nav-item">
+        <a href="{% url 'superadmin_support' %}" class="sidebar-nav-link">
+            <i class="bi bi-envelope-paper"></i> Support Tickets
+        </a>
+    </li>
+    <li class="sidebar-nav-item">
+        <a href="{% url 'superadmin_audit' %}" class="sidebar-nav-link">
+            <i class="bi bi-clock-history"></i> Audit Logs
+        </a>
+    </li>
+
+{% else %}
+    <!-- Common Dashboard Link for Institution Roles -->
+    <li class="sidebar-nav-item">
+        <a href="{% url 'dashboard' %}" class="sidebar-nav-link">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+    </li>
+
+    <!-- Institution Owner / Admin Links -->
+    {% if user.role == 'INSTITUTION_OWNER' or user.role == 'INSTITUTION_ADMIN' %}
+        <li class="sidebar-nav-item">
+            <a href="{% url 'onboarding_wizard' %}" class="sidebar-nav-link">
+                <i class="bi bi-magic"></i> Onboarding Wizard
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'department_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-diagram-3"></i> Academics
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'student_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-people"></i> Students
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'faculty_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-person-workspace"></i> Faculty
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'results_process' %}" class="sidebar-nav-link">
+                <i class="bi bi-calculator"></i> Results Center
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'notifications_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-bell"></i> Notifications
+                {% if unread_notifications_count > 0 %}
+                    <span class="badge bg-danger ms-auto">{{ unread_notifications_count }}</span>
+                {% endif %}
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'billing_dashboard' %}" class="sidebar-nav-link">
+                <i class="bi bi-credit-card"></i> Subscriptions
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'ticket_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-chat-left-dots"></i> Support Help
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'settings' %}" class="sidebar-nav-link">
+                <i class="bi bi-gear"></i> Settings
+            </a>
+        </li>
+    {% endif %}
+
+    <!-- HOD Links -->
+    {% if user.role == 'HOD' %}
+        <li class="sidebar-nav-item">
+            <a href="{% url 'student_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-people"></i> Dept Students
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'faculty_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-person-badge"></i> Dept Faculty
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'marks_verification_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-patch-check"></i> Marks Approvals
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'results_process' %}" class="sidebar-nav-link">
+                <i class="bi bi-calculator"></i> Result Approvals
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'notifications_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-bell"></i> Notifications
+                {% if unread_notifications_count > 0 %}
+                    <span class="badge bg-danger ms-auto">{{ unread_notifications_count }}</span>
+                {% endif %}
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'reports' %}" class="sidebar-nav-link">
+                <i class="bi bi-file-earmark-bar-graph"></i> Reports
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'analytics' %}" class="sidebar-nav-link">
+                <i class="bi bi-graph-up-arrow"></i> Analytics
+            </a>
+        </li>
+    {% endif %}
+
+    <!-- Faculty Links -->
+    {% if user.role == 'FACULTY' %}
+        <li class="sidebar-nav-item">
+            <a href="{% url 'subject_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-journal-bookmark"></i> My Subjects
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'marks_entry' %}" class="sidebar-nav-link">
+                <i class="bi bi-pen"></i> Marks Entry
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'notifications_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-bell"></i> Notifications
+                {% if unread_notifications_count > 0 %}
+                    <span class="badge bg-danger ms-auto">{{ unread_notifications_count }}</span>
+                {% endif %}
+            </a>
+        </li>
+    {% endif %}
+
+    <!-- Exam Controller Links -->
+    {% if user.role == 'EXAM_CONTROLLER' %}
+        <li class="sidebar-nav-item">
+            <a href="{% url 'examination_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-calendar-event"></i> Examinations
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'controller_marks_verification' %}" class="sidebar-nav-link">
+                <i class="bi bi-shield-check"></i> Marks Lock
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'results_process' %}" class="sidebar-nav-link">
+                <i class="bi bi-calculator"></i> Process Results
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'notifications_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-bell"></i> Notifications
+                {% if unread_notifications_count > 0 %}
+                    <span class="badge bg-danger ms-auto">{{ unread_notifications_count }}</span>
+                {% endif %}
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'reports' %}" class="sidebar-nav-link">
+                <i class="bi bi-file-earmark-pdf"></i> Report Card
+            </a>
+        </li>
+    {% endif %}
+
+    <!-- Student Links -->
+    {% if user.role == 'STUDENT' %}
+        {% if user.student %}
+        <li class="sidebar-nav-item">
+            <a href="{% url 'student_profile' user.student.id %}" class="sidebar-nav-link">
+                <i class="bi bi-person-circle"></i> My Profile
+            </a>
+        </li>
+        {% endif %}
+        <li class="sidebar-nav-item">
+            <a href="{% url 'subject_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-journal-text"></i> My Subjects
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'exam_registration_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-file-earmark-text"></i> Exams & Admit Card
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'student_results' %}" class="sidebar-nav-link">
+                <i class="bi bi-patch-check-fill"></i> View Results
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'notifications_list' %}" class="sidebar-nav-link">
+                <i class="bi bi-bell"></i> Notifications
+                {% if unread_notifications_count > 0 %}
+                    <span class="badge bg-danger ms-auto">{{ unread_notifications_count }}</span>
+                {% endif %}
+            </a>
+        </li>
+    {% endif %}
+
+{% endif %}

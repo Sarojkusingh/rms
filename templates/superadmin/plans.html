@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Pricing Plans{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">SaaS Pricing Plans</h2>
+    <p class="text-muted m-0">Pricing plans configurations and tenant limits mappings.</p>
+</div>
+
+<div class="row g-3">
+    {% for plan in plans %}
+    <div class="col-md-4">
+        <div class="rms-card p-4 h-100 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold font-heading m-0 text-primary">{{ plan.name }}</h4>
+                <span class="badge {% if plan.is_active %}bg-success{% else %}bg-secondary{% endif %} bg-opacity-10 text-{% if plan.is_active %}success{% else %}secondary{% endif %}">
+                    {% if plan.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+            </div>
+            
+            <h2 class="fw-bold text-dark mb-4">₹{{ plan.price_monthly }} <small class="text-muted fs-6 fw-normal">/ month</small></h2>
+            
+            <ul class="list-unstyled mb-4" style="line-height: 2;">
+                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Max Students: <strong>{{ plan.student_limit }}</strong></li>
+                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Max Faculty: <strong>{{ plan.faculty_limit }}</strong></li>
+                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Max Storage: <strong>{{ plan.storage_limit_gb }} GB</strong></li>
+                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Max Admins: <strong>{{ plan.admin_limit }}</strong></li>
+            </ul>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">No plans configured.</div>
+    {% endfor %}
+</div>
+{% endblock %}

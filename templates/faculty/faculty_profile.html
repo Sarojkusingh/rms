@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Faculty Profile - {{ faculty.user.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Column: Summary Card -->
+    <div class="col-lg-4 mb-4">
+        <div class="rms-card text-center py-4">
+            <div class="position-relative d-inline-block mb-3">
+                {% if faculty.user.profile_picture %}
+                    <img src="{{ faculty.user.profile_picture.url }}" alt="{{ faculty.user.username }}" class="rounded-circle border" style="width: 120px; height: 120px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto border" style="width: 120px; height: 120px; font-size: 3rem; font-weight: bold;">
+                        {{ faculty.user.username|slice:":2"|upper }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <h4 class="m-0 font-heading fw-semibold">{{ faculty.user.get_full_name|default:faculty.user.username }}</h4>
+            <p class="text-muted mb-2 font-monospace">{{ faculty.employee_id }}</p>
+            <p class="text-secondary mb-3 fs-7">{{ faculty.designation }} — {{ faculty.department.code }}</p>
+            
+            {% if faculty.status == 'ACTIVE' %}
+                <span class="badge bg-opacity-10 bg-success text-success px-3 py-2 rounded-pill fs-7">Active Staff</span>
+            {% else %}
+                <span class="badge bg-opacity-10 bg-secondary text-secondary px-3 py-2 rounded-pill fs-7">{{ faculty.status }}</span>
+            {% endif %}
+            
+            <hr class="my-4">
+            
+            <div class="text-start">
+                <p class="mb-2"><strong class="text-muted">Username:</strong> <span class="float-end">{{ faculty.user.username }}</span></p>
+                <p class="mb-2"><strong class="text-muted">Email:</strong> <span class="float-end text-truncate" style="max-width: 150px;" title="{{ faculty.user.email }}">{{ faculty.user.email }}</span></p>
+                <p class="mb-2"><strong class="text-muted">Joining Date:</strong> <span class="float-end">{{ faculty.joining_date|date:"d M Y"|default:"Not set" }}</span></p>
+                <p class="mb-0"><strong class="text-muted">Qualification:</strong> <span class="float-end text-wrap">{{ faculty.qualification|default:"Not configured" }}</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Subject Allocations list -->
+    <div class="col-lg-8">
+        <div class="rms-card p-4">
+            <h4 class="mb-4 font-heading fw-semibold border-bottom pb-2"><i class="bi bi-journal-bookmark me-2 text-primary"></i>Allocated Subjects & Sections</h4>
+            
+            {% if faculty.subject_allocations.all %}
+                <div class="rms-table-responsive">
+                    <table class="table rms-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Subject Code</th>
+                                <th>Subject Name</th>
+                                <th>Program</th>
+                                <th>Section</th>
+                                <th>Session</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alloc in faculty.subject_allocations.all %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><span class="badge bg-secondary font-monospace">{{ alloc.subject.code }}</span></td>
+                                <td class="fw-semibold">{{ alloc.subject.name }}</td>
+                                <td>{{ alloc.subject.program.code }}</td>
+                                <td>{{ alloc.section.name|default:"All Sections" }}</td>
+                                <td class="font-monospace fs-7 text-muted">{{ alloc.academic_session.name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5 text-muted border border-dashed rounded" style="border-radius: var(--radius-lg);">
+                    <i class="bi bi-journal-x fs-1 mb-2 d-block text-opacity-50"></i>
+                    <p class="m-0 fw-semibold">No allocated classes found</p>
+                    <p class="m-0 text-muted" style="font-size: 0.85rem;">Use subject allocations to assign courses.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

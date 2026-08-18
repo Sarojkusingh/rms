@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Platform Features - RMS SaaS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center max-w-700 mx-auto mb-5">
+        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2 fw-semibold">Features</span>
+        <h1 class="display-4 font-heading fw-bold">Everything You Need to Manage Results</h1>
+        <p class="lead text-muted">Automate marks entry, result calculation, transcript generation, backlogs, and revaluation across multi-tenant academic institutions.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-4" style="border-radius: var(--radius-lg);">
+                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle d-inline-flex mb-3" style="width: 50px; height: 50px; align-items: center; justify-content: center;">
+                    <i class="bi bi-diagram-3 fs-4"></i>
+                </div>
+                <h5 class="font-heading fw-bold">Multi-Tenant Architecture</h5>
+                <p class="text-muted small">Independent database scoping for each institution, with custom branding, subdomains, and isolated academic configurations.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-4" style="border-radius: var(--radius-lg);">
+                <div class="bg-success bg-opacity-10 text-success p-3 rounded-circle d-inline-flex mb-3" style="width: 50px; height: 50px; align-items: center; justify-content: center;">
+                    <i class="bi bi-calculator fs-4"></i>
+                </div>
+                <h5 class="font-heading fw-bold">Automated SGPA & CGPA</h5>
+                <p class="text-muted small">Flexible grading formulas, credit points calculation, pass/fail threshold evaluation, and automated rank generation.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-4" style="border-radius: var(--radius-lg);">
+                <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-circle d-inline-flex mb-3" style="width: 50px; height: 50px; align-items: center; justify-content: center;">
+                    <i class="bi bi-shield-check fs-4"></i>
+                </div>
+                <h5 class="font-heading fw-bold">Multi-Level Workflow</h5>
+                <p class="text-muted small">Role-based approval chain from Faculty entry, HOD review, Exam Controller lock, to final automated notification release.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-4" style="border-radius: var(--radius-lg);">
+                <div class="bg-info bg-opacity-10 text-info p-3 rounded-circle d-inline-flex mb-3" style="width: 50px; height: 50px; align-items: center; justify-content: center;">
+                    <i class="bi bi-qr-code-scan fs-4"></i>
+                </div>
+                <h5 class="font-heading fw-bold">QR Verified Marksheets</h5>
+                <p class="text-muted small">Tamper-proof grade cards and official transcripts embedded with dynamic QR codes for instant online verification.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-4" style="border-radius: var(--radius-lg);">
+                <div class="bg-danger bg-opacity-10 text-danger p-3 rounded-circle d-inline-flex mb-3" style="width: 50px; height: 50px; align-items: center; justify-content: center;">
+                    <i class="bi bi-exclamation-triangle fs-4"></i>
+                </div>
+                <h5 class="font-heading fw-bold">Backlog & Revaluation</h5>
+                <p class="text-muted small">Track student arrears, schedule backlog examinations, and manage student revaluation applications seamlessly.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-4" style="border-radius: var(--radius-lg);">
+                <div class="bg-dark bg-opacity-10 text-dark p-3 rounded-circle d-inline-flex mb-3" style="width: 50px; height: 50px; align-items: center; justify-content: center;">
+                    <i class="bi bi-bell fs-4"></i>
+                </div>
+                <h5 class="font-heading fw-bold">Instant Notifications</h5>
+                <p class="text-muted small">Real-time alerts for result publication, marks approvals, backlog registration, and ticket updates for all roles.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

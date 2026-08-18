@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}My Registered Examinations{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">My Examinations</h2>
+    <p class="text-muted m-0">View registered exam schedules and download admit cards</p>
+</div>
+
+<!-- Student Registrations List -->
+<div class="row g-3">
+    {% for reg in registrations %}
+    <div class="col-md-6">
+        <div class="rms-card p-4 bg-white d-flex flex-column h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-primary bg-opacity-10 text-primary">Registered</span>
+                <span class="text-muted font-monospace fs-7">{{ reg.examination.academic_session.name }}</span>
+            </div>
+            
+            <h5 class="fw-bold font-heading mb-1">{{ reg.examination.name }}</h5>
+            <p class="text-secondary fs-7 mb-4">Exam Type: {{ reg.examination.get_exam_type_display }}</p>
+            
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+                <small class="text-muted"><i class="bi bi-calendar-event me-1"></i> Starts: {{ reg.examination.start_date|date:"d M Y" }}</small>
+                <a href="{% url 'student_admit_card' reg.id %}" class="btn btn-outline-primary btn-sm fw-semibold">
+                    View Admit Card <i class="bi bi-file-earmark-pdf ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="rms-card p-5 text-center text-muted">
+            <i class="bi bi-calendar-x fs-1 mb-2 d-block text-opacity-50"></i>
+            <p class="m-0 fw-semibold">No registered examinations found</p>
+            <p class="m-0 text-muted" style="font-size: 0.85rem;">You will be automatically registered for active semester examinations when scheduled.</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

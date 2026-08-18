@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}My Academic Results{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">My Academic Results</h2>
+    <p class="text-muted m-0">View grades, SGPA/CGPA stats, and print semester grade cards</p>
+</div>
+
+<!-- Results grid -->
+<div class="row g-3">
+    {% for r in results %}
+    <div class="col-md-6">
+        <div class="rms-card p-4 bg-white d-flex flex-column h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-success bg-opacity-10 text-success">Result Published</span>
+                <span class="text-muted font-monospace fs-7">S{{ r.semester.number }}</span>
+            </div>
+            
+            <h5 class="fw-bold font-heading mb-1">{{ r.examination.name }}</h5>
+            <p class="text-secondary fs-7 mb-4">SGPA: <strong class="text-primary">{{ r.sgpa|floatformat:2 }}</strong> | CGPA: <strong>{{ r.cgpa|floatformat:2 }}</strong></p>
+            
+            <div class="d-flex justify-content-between align-items-center mt-auto border-top pt-3">
+                <small class="text-muted"><i class="bi bi-clock-history me-1"></i> Published: {{ r.published_at|date:"d M Y" }}</small>
+                <a href="{% url 'student_marksheet' r.id %}" class="btn btn-outline-primary btn-sm fw-semibold">
+                    View Marksheet <i class="bi bi-file-earmark-check ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="rms-card p-5 text-center text-muted">
+            <i class="bi bi-file-earmark-lock fs-1 mb-2 d-block text-opacity-50"></i>
+            <p class="m-0 fw-semibold">No published results found</p>
+            <p class="m-0 text-muted" style="font-size: 0.85rem;">Official results cards are displayed here when published by the Controller of Examinations.</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

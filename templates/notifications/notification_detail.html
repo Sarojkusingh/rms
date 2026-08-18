@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{{ notification.title }}{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'notifications_list' %}" class="text-decoration-none text-secondary fw-semibold">
+        <i class="bi bi-arrow-left me-1"></i> Back to Notifications
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="rms-card p-4">
+            <!-- Icon header -->
+            <div class="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
+                <div class="d-flex align-items-center justify-content-center rounded-circle 
+                    {% if notification.notification_type == 'RESULT_PUBLISHED' %}
+                        bg-success bg-opacity-10 text-success
+                    {% else %}
+                        bg-primary bg-opacity-10 text-primary
+                    {% endif %}" 
+                    style="width: 52px; height: 52px; flex-shrink: 0;">
+                    {% if notification.notification_type == 'RESULT_PUBLISHED' %}
+                        <i class="bi bi-file-earmark-bar-graph fs-4"></i>
+                    {% else %}
+                        <i class="bi bi-bell-fill fs-4"></i>
+                    {% endif %}
+                </div>
+                <div>
+                    <h4 class="m-0 fw-bold font-heading text-dark">{{ notification.title }}</h4>
+                    <span class="text-muted fs-8">
+                        <i class="bi bi-clock me-1"></i> Received on {{ notification.created_at|date:"d M Y, h:i A" }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Message details -->
+            <div class="mb-4" style="line-height: 1.6; font-size: 0.95rem; color: var(--text-dark);">
+                {{ notification.message|linebreaks }}
+            </div>
+
+            <!-- Action buttons -->
+            <div class="d-flex gap-2">
+                {% if notification.notification_type == 'RESULT_PUBLISHED' %}
+                    <a href="{% url 'student_results' %}" class="btn btn-primary fw-semibold px-4 shadow-sm">
+                        <i class="bi bi-eye-fill me-1"></i> View My Results
+                    </a>
+                {% endif %}
+                <a href="{% url 'notifications_list' %}" class="btn btn-outline-secondary fw-semibold px-4">
+                    All Notifications
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

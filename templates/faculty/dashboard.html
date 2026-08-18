@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Faculty Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Faculty Portal</h2>
+    <p class="text-muted m-0">Welcome back. Record student grades and manage subject courses.</p>
+</div>
+
+<!-- Faculty Statistics -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">DRAFT MARKS SHEETS</small>
+            <span class="fs-2 fw-bold text-warning">{{ pending_entries }}</span>
+            <a href="{% url 'marks_entry' %}" class="d-block mt-2 fs-7 text-decoration-none">Open Marks Sheet →</a>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">SUBMITTED SHEET LOGS</small>
+            <span class="fs-2 fw-bold text-success">{{ submitted_sheets }}</span>
+            <span class="d-block mt-2 fs-7 text-muted">Awaiting HOD approval</span>
+        </div>
+    </div>
+</div>
+
+<!-- Class Allocations Table -->
+<div class="rms-card p-4">
+    <h5 class="fw-bold font-heading mb-3 border-bottom pb-2"><i class="bi bi-journal-bookmark me-2 text-primary"></i>My Subject Class Allocations</h5>
+    
+    {% if allocations %}
+        <div class="rms-table-responsive">
+            <table class="table rms-table align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">#</th>
+                        <th>Subject Code</th>
+                        <th>Subject Title</th>
+                        <th>Program</th>
+                        <th>Section</th>
+                        <th style="text-align: right; width: 180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alloc in allocations %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><span class="badge bg-secondary font-monospace">{{ alloc.subject.code }}</span></td>
+                        <td class="fw-semibold text-dark">{{ alloc.subject.name }}</td>
+                        <td>{{ alloc.subject.program.code }}</td>
+                        <td>{{ alloc.section.name|default:"All Sections" }}</td>
+                        <td style="text-align: right;">
+                            <a href="{% url 'marks_entry' %}?examination={{ inst.settings.current_session.examinations.first.id|default:'' }}&program={{ alloc.subject.program.id }}&semester={{ alloc.subject.semester.id }}&subject={{ alloc.subject.id }}&section={{ alloc.section.id|default:'' }}" class="btn btn-primary btn-sm fw-semibold">
+                                <i class="bi bi-pencil-square"></i> Record Marks
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="text-center py-5 text-muted border border-dashed rounded">
+            <i class="bi bi-journal-x fs-1 mb-2 d-block text-opacity-50"></i>
+            <p class="m-0 fw-semibold">No allocated classes found</p>
+            <p class="m-0 text-muted" style="font-size: 0.85rem;">Contact your administrator to allocate subjects to your account.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

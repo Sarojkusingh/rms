@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Student Profile - {{ student.user.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Column: Header and KPI Summary Card -->
+    <div class="col-lg-4 mb-4">
+        <div class="rms-card text-center py-4">
+            <div class="position-relative d-inline-block mb-3">
+                {% if student.photo %}
+                    <img src="{{ student.photo.url }}" alt="{{ student.student_id }}" class="rounded-circle border" style="width: 120px; height: 120px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto border" style="width: 120px; height: 120px; font-size: 3rem; font-weight: bold;">
+                        {{ student.user.username|slice:":2"|upper }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <h4 class="m-0 font-heading fw-semibold">{{ student.user.get_full_name|default:student.user.username }}</h4>
+            <p class="text-muted mb-2 font-monospace">{{ student.student_id }}</p>
+            <p class="text-secondary mb-3 fs-7">{{ student.program.name }} - Semester {{ student.semester.number }}</p>
+            
+            {% if student.status == 'ACTIVE' %}
+                <span class="badge bg-opacity-10 bg-success text-success px-3 py-2 rounded-pill fs-7">Active Enrollment</span>
+            {% else %}
+                <span class="badge bg-opacity-10 bg-secondary text-secondary px-3 py-2 rounded-pill fs-7">{{ student.status }}</span>
+            {% endif %}
+            
+            <hr class="my-4">
+            
+            <!-- academic performance highlights -->
+            <div class="row g-2 mb-2">
+                <div class="col-4 border-end">
+                    <small class="text-muted d-block">CGPA</small>
+                    <span class="fs-4 fw-bold text-primary">{{ student.academic_history.cgpa|floatformat:2 }}</span>
+                </div>
+                <div class="col-4 border-end">
+                    <small class="text-muted d-block">Credits</small>
+                    <span class="fs-4 fw-bold text-dark">{{ student.academic_history.total_credits_completed }}</span>
+                </div>
+                <div class="col-4">
+                    <small class="text-muted d-block">Backlogs</small>
+                    <span class="fs-4 fw-bold {% if student.academic_history.active_backlogs > 0 %}text-danger{% else %}text-success{% endif %}">
+                        {{ student.academic_history.active_backlogs }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Detail Information Tabs -->
+    <div class="col-lg-8">
+        <div class="rms-card p-4">
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs border-bottom mb-4" id="profileTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-semibold" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true"><i class="bi bi-grid-fill me-1"></i> Overview</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab" aria-controls="personal" aria-selected="false"><i class="bi bi-person-bounding-box me-1"></i> Details</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold" id="academic-tab" data-bs-toggle="tab" data-bs-target="#academic" type="button" role="tab" aria-controls="academic" aria-selected="false"><i class="bi bi-mortarboard me-1"></i> Enrollments</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold" id="results-tab" data-bs-toggle="tab" data-bs-target="#results" type="button" role="tab" aria-controls="results" aria-selected="false"><i class="bi bi-patch-check me-1"></i> Results</button>
+                </li>
+            </ul>
+            
+            <!-- Tabs Content -->
+            <div class="tab-content" id="profileTabContent">
+                <!-- Overview Tab -->
+                <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                    <h5 class="fw-semibold mb-3">Academic Summary</h5>
+                    <p class="text-muted">Currently enrolled in <strong>{{ student.program.name }}</strong> offered by the department of <strong>{{ student.department.name }}</strong>. General statistics are synced below.</p>
+                    
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded bg-light">
+                                <small class="text-muted d-block">Department</small>
+                                <span class="fw-semibold">{{ student.department.name }} ({{ student.department.code }})</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded bg-light">
+                                <small class="text-muted d-block">Active Session</small>
+                                <span class="fw-semibold">{{ student.academic_session.name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Personal Details Tab -->
+                <div class="tab-pane fade" id="personal" role="tabpanel" aria-labelledby="personal-tab">
+                    <h5 class="fw-semibold mb-3 border-bottom pb-2">Personal Details</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6"><strong>Email:</strong> <span class="text-muted">{{ student.user.email }}</span></div>
+                        <div class="col-md-6"><strong>Date of Birth:</strong> <span class="text-muted">{{ student.dob|date:"d M Y"|default:"Not configured" }}</span></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6"><strong>Gender:</strong> <span class="text-muted">{{ student.gender|default:"Not configured" }}</span></div>
+                        <div class="col-md-6"><strong>Registration Number:</strong> <span class="text-muted">{{ student.registration_number|default:"Not configured" }}</span></div>
+                    </div>
+                    
+                    <h5 class="fw-semibold mb-3 border-top pt-3 border-bottom pb-2">Parent Details</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6"><strong>Father's Name:</strong> <span class="text-muted">{{ student.father_name|default:"Not configured" }}</span></div>
+                        <div class="col-md-6"><strong>Mother's Name:</strong> <span class="text-muted">{{ student.mother_name|default:"Not configured" }}</span></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6"><strong>Parent Contact Phone:</strong> <span class="text-muted">{{ student.parent_contact|default:"Not configured" }}</span></div>
+                    </div>
+                </div>
+                
+                <!-- Academic History (Enrollments) -->
+                <div class="tab-pane fade" id="academic" role="tabpanel" aria-labelledby="academic-tab">
+                    <h5 class="fw-semibold mb-3">Enrollment Timeline</h5>
+                    {% if student.enrollments.all %}
+                        <div class="rms-table-responsive">
+                            <table class="table rms-table">
+                                <thead>
+                                    <tr>
+                                        <th>Academic Session</th>
+                                        <th>Semester</th>
+                                        <th>Date Enrolled</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for e in student.enrollments.all %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ e.academic_session.name }}</td>
+                                        <td>Semester {{ e.semester.number }}</td>
+                                        <td>{{ e.enrolled_at|date:"d M Y" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No historical enrollment logs found.</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Results List Tab -->
+                <div class="tab-pane fade" id="results" role="tabpanel" aria-labelledby="results-tab">
+                    <h5 class="fw-semibold mb-3">Academic Results cards</h5>
+                    {% if student.results.all %}
+                        <div class="row g-3">
+                            {% for r in student.results.all %}
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded shadow-sm bg-white">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge bg-secondary">Semester {{ r.semester.number }}</span>
+                                        <span class="badge {% if r.status == 'PUBLISHED' %}bg-success{% else %}bg-warning{% endif %} bg-opacity-10 text-{% if r.status == 'PUBLISHED' %}success{% else %}warning{% endif %}">
+                                            {{ r.status }}
+                                        </span>
+                                    </div>
+                                    <h6 class="fw-bold mb-1">{{ r.examination.name }}</h6>
+                                    <p class="text-muted fs-7 mb-3">Percentage: {{ r.percentage|floatformat:2 }}%</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <small class="text-muted d-block">SGPA</small>
+                                            <span class="h5 fw-bold text-primary">{{ r.sgpa|floatformat:2 }}</span>
+                                        </div>
+                                        {% if r.status == 'PUBLISHED' %}
+                                            <a href="{% url 'student_marksheet' r.id %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-file-earmark-check"></i> Marksheet</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 text-muted border border-dashed rounded">
+                            <i class="bi bi-bookmark-x fs-2 mb-2 d-block"></i>
+                            <p class="m-0 fw-semibold">No results processed yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

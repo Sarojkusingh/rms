@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Technical Support Tickets{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Ticket Submission Form Column -->
+    <div class="col-lg-4 mb-4">
+        <div class="rms-card">
+            <h4 class="mb-4 font-heading fw-semibold border-bottom pb-2">Submit Support Ticket</h4>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="subject" class="form-label fw-semibold">Subject / Ticket Title</label>
+                    <input type="text" id="subject" name="subject" class="form-control" placeholder="e.g. Cannot lock subject Marks Sheet" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="priority" class="form-label fw-semibold">Severity Priority</label>
+                    <select id="priority" name="priority" class="form-select" required>
+                        {% for code, label in priorities %}
+                            <option value="{{ code }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="message" class="form-label fw-semibold">Detail Query Message</label>
+                    <textarea id="message" name="message" class="form-control" rows="4" placeholder="Describe your query in detail..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">
+                    Submit Support Ticket <i class="bi bi-send-fill ms-1"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Active Tickets List Column -->
+    <div class="col-lg-8">
+        <div class="rms-card p-4">
+            <h4 class="mb-4 font-heading fw-semibold border-bottom pb-2">Technical Support Logs</h4>
+            
+            {% if tickets %}
+                <div class="rms-table-responsive">
+                    <table class="table rms-table align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">ID</th>
+                                <th>Timestamp</th>
+                                <th>Subject Description</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ticket in tickets %}
+                            <tr>
+                                <td><span class="badge bg-secondary">#{{ ticket.id }}</span></td>
+                                <td>{{ ticket.created_at|date:"d M Y H:i" }}</td>
+                                <td>
+                                    <strong class="text-dark">{{ ticket.subject }}</strong>
+                                    <p class="m-0 text-muted fs-7" style="max-width: 320px;">{{ ticket.message }}</p>
+                                </td>
+                                <td>
+                                    {% if ticket.priority == 'HIGH' %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger">High</span>
+                                    {% elif ticket.priority == 'MEDIUM' %}
+                                        <span class="badge bg-warning bg-opacity-10 text-warning">Medium</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary">Low</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ticket.status == 'OPEN' %}
+                                        <span class="badge bg-success bg-opacity-10 text-success">Open</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary">Closed</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5 text-muted border border-dashed rounded">
+                    <i class="bi bi-chat-left-text fs-1 mb-2 d-block text-opacity-50"></i>
+                    <p class="m-0 fw-semibold">No support tickets found</p>
+                    <p class="m-0 text-muted" style="font-size: 0.85rem;">Need assistance? Submit a technical help request using the left form.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

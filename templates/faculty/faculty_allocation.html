@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Class Allocations{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Allocation Form Column -->
+    <div class="col-lg-4 mb-4">
+        <div class="rms-card">
+            <h4 class="mb-4 font-heading fw-semibold border-bottom pb-2">Allocate Subject</h4>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="faculty" class="form-label fw-semibold">Faculty Member</label>
+                    <select id="faculty" name="faculty" class="form-select" required>
+                        <option value="">Select Faculty</option>
+                        {% for f in faculties %}
+                            <option value="{{ f.id }}">{{ f.employee_id }} - {{ f.user.get_full_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="subject" class="form-label fw-semibold">Subject Catalog</label>
+                    <select id="subject" name="subject" class="form-select" required>
+                        <option value="">Select Subject</option>
+                        {% for sub in subjects %}
+                            <option value="{{ sub.id }}">{{ sub.code }} - {{ sub.name }} ({{ sub.program.code }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="section" class="form-label fw-semibold">Section (Optional)</label>
+                    <select id="section" name="section" class="form-select">
+                        <option value="">All Sections / Unified</option>
+                        {% for sec in sections %}
+                            <option value="{{ sec.id }}">{{ sec.name }} ({{ sec.program.code }} S{{ sec.semester.number }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">
+                    Allocate Subject <i class="bi bi-journal-check ms-1"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Allocation List Table Column -->
+    <div class="col-lg-8">
+        <div class="rms-card p-4">
+            <h4 class="mb-4 font-heading fw-semibold border-bottom pb-2">Active Subject Allocations</h4>
+            
+            {% if allocations %}
+                <div class="rms-table-responsive">
+                    <table class="table rms-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Faculty</th>
+                                <th>Subject Code</th>
+                                <th>Subject Name</th>
+                                <th>Section</th>
+                                <th>Session</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alloc in allocations %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <span class="fw-semibold text-dark">{{ alloc.faculty.user.get_full_name }}</span>
+                                    <small class="text-muted d-block font-monospace">{{ alloc.faculty.employee_id }}</small>
+                                </td>
+                                <td><span class="badge bg-secondary font-monospace">{{ alloc.subject.code }}</span></td>
+                                <td>{{ alloc.subject.name }}</td>
+                                <td>{{ alloc.section.name|default:"All" }}</td>
+                                <td>{{ alloc.academic_session.name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5 text-muted border border-dashed rounded">
+                    <i class="bi bi-journal-x fs-1 mb-2 d-block text-opacity-50"></i>
+                    <p class="m-0 fw-semibold">No allocated classes found</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

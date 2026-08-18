@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Billing & Plan Limits{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Billing & Pricing Plan Limits</h2>
+    <p class="text-muted m-0">Monitor platform usage limits, manage subscription plans, and review payment history.</p>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Active Subscription Details -->
+    <div class="col-lg-6">
+        <div class="rms-card p-4 h-100 d-flex flex-column">
+            <h5 class="fw-bold font-heading mb-3 border-bottom pb-2 text-primary">Active Plan Details</h5>
+            
+            <div class="mb-4">
+                <span class="badge bg-primary bg-opacity-10 text-primary p-2 fs-6 mb-2">{{ subscription.plan.name }} Plan</span>
+                <h2 class="fw-bold text-dark">₹{{ subscription.plan.price_monthly }} <small class="text-muted fs-6 fw-normal">/ month</small></h2>
+                <p class="text-muted fs-7 mt-1">Renews on: <strong>{{ subscription.end_date|date:"d F Y" }}</strong> (Status: {{ subscription.status }})</p>
+            </div>
+            
+            <!-- Usage Progress Bars -->
+            <div class="mt-auto">
+                <h6 class="fw-bold text-dark mb-2">Usage Limits Tracking</h6>
+                
+                <!-- Students Progress Bar -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between fs-7 mb-1 text-muted">
+                        <span>Students Enrolled</span>
+                        <span><strong>{{ students_count }}</strong> of {{ subscription.plan.student_limit }}</span>
+                    </div>
+                    <div class="progress" style="height: 8px; border-radius: var(--radius-sm);">
+                        <div class="progress-bar {% if students_pct > 85 %}bg-danger{% else %}bg-primary{% endif %}" role="progressbar" style="width: {{ students_pct }}%;" aria-valuenow="{{ students_pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+
+                <!-- Faculty Progress Bar -->
+                <div>
+                    <div class="d-flex justify-content-between fs-7 mb-1 text-muted">
+                        <span>Faculty Registered</span>
+                        <span><strong>{{ faculty_count }}</strong> of {{ subscription.plan.faculty_limit }}</span>
+                    </div>
+                    <div class="progress" style="height: 8px; border-radius: var(--radius-sm);">
+                        <div class="progress-bar {% if faculty_pct > 85 %}bg-danger{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ faculty_pct }}%;" aria-valuenow="{{ faculty_pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade / Pricing Tiers Grid -->
+    <div class="col-lg-6">
+        <div class="rms-card p-4 h-100">
+            <h5 class="fw-bold font-heading mb-3 border-bottom pb-2">Change Pricing Plan Tier</h5>
+            <p class="text-muted fs-7 mb-4">Need higher student or faculty bounds? Choose an upgrade tier below to enter mock card details.</p>
+            
+            <div class="row g-2">
+                {% for plan in plans %}
+                    {% if plan.id != subscription.plan.id %}
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded shadow-sm bg-light h-100 d-flex flex-column">
+                            <h6 class="fw-bold text-dark mb-1">{{ plan.name }}</h6>
+                            <h4 class="fw-bold text-primary mb-3">₹{{ plan.price_monthly }}<span class="fs-7 text-muted fw-normal">/mo</span></h4>
+                            <ul class="list-unstyled fs-7 text-muted mb-3" style="line-height: 1.6;">
+                                <li>Students: {{ plan.student_limit }}</li>
+                                <li>Faculty: {{ plan.faculty_limit }}</li>
+                            </ul>
+                            <a href="{% url 'checkout_mock' plan.id %}" class="btn btn-outline-primary btn-sm fw-semibold w-100 mt-auto">
+                                Upgrade Plan
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction History Ledger -->
+<div class="rms-card p-4">
+    <h5 class="fw-bold font-heading mb-3 border-bottom pb-2">Platform Invoices & Transactions Ledger</h5>
+    
+    {% if payments %}
+        <div class="rms-table-responsive">
+            <table class="table rms-table align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">#</th>
+                        <th>Transaction Date</th>
+                        <th>Transaction ID</th>
+                        <th>Paid Amount</th>
+                        <th>Status</th>
+                        <th style="text-align: right; width: 140px;">Invoice</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pay in payments %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ pay.created_at|date:"d M Y H:i" }}</td>
+                        <td><span class="font-monospace text-muted fs-7">{{ pay.transaction_id }}</span></td>
+                        <td><strong class="text-success">₹{{ pay.amount }}</strong></td>
+                        <td>
+                            <span class="badge bg-success bg-opacity-10 text-success">Successful</span>
+                        </td>
+                        <td style="text-align: right;">
+                            <button onclick="alert('GST invoice downloaded!')" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-arrow-down"></i> GST Invoice</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted text-center py-4">No billing payment logs recorded.</p>
+    {% endif %}
+</div>
+{% endblock %}

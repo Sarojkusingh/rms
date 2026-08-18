@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Official Transcript - {{ student.user.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-lg-10">
+        
+        <!-- Action bar -->
+        <div class="d-flex justify-content-between mb-4 no-print">
+            <a href="{% url 'student_list' %}" class="btn btn-outline-secondary fw-semibold">
+                <i class="bi bi-arrow-left me-1"></i> Back to Students
+            </a>
+            <button onclick="window.print()" class="btn btn-primary fw-semibold shadow-sm">
+                <i class="bi bi-printer me-1"></i> Print Transcript / PDF
+            </button>
+        </div>
+
+        <!-- Official Transcript Card -->
+        <div class="rms-card p-5 border-2 border-dark" style="border-style: double !important; border-radius: var(--radius-lg); background-color: #ffffff; color: #000000;">
+            
+            <!-- Institution Header -->
+            <div class="text-center pb-3 border-bottom border-2 border-dark mb-4">
+                {% if current_institution.logo %}
+                    <img src="{{ current_institution.logo.url }}" alt="Logo" height="65" class="mb-2">
+                {% endif %}
+                <h2 class="font-heading fw-bold text-dark mb-1">{{ current_institution.name|upper }}</h2>
+                <h5 class="text-muted font-heading m-0">{{ current_institution.address|default:"" }}</h5>
+                <h4 class="fw-bold font-heading mt-4 mb-0 text-primary" style="letter-spacing: 1px;">OFFICIAL ACADEMIC TRANSCRIPT</h4>
+            </div>
+
+            <!-- Student Metadata Grid -->
+            <div class="row mb-5" style="line-height: 1.8; font-size: 0.95rem;">
+                <div class="col-md-6 border-end">
+                    <p class="mb-1"><strong>Student Name:</strong> <span class="text-dark fw-bold">{{ student.user.get_full_name|upper }}</span></p>
+                    <p class="mb-1"><strong>Student Roll / ID:</strong> <span class="text-dark font-monospace fw-bold">{{ student.student_id }}</span></p>
+                    <p class="mb-1"><strong>Registration Number:</strong> <span class="text-dark font-monospace">{{ student.registration_number|default:"N/A" }}</span></p>
+                </div>
+                <div class="col-md-6 ps-md-4">
+                    <p class="mb-1"><strong>Degree Program:</strong> <span class="text-dark">{{ student.program.name }}</span></p>
+                    <p class="mb-1"><strong>Department:</strong> <span class="text-dark">{{ student.department.name }}</span></p>
+                    <p class="mb-0"><strong>Status:</strong> <span class="text-dark fw-semibold">{{ student.status }}</span></p>
+                </div>
+            </div>
+
+            <!-- Semesters Data Loop -->
+            {% for sem in semesters_data %}
+            <div class="mb-5">
+                <h5 class="fw-bold text-primary font-heading mb-3 border-bottom pb-2 border-primary border-opacity-25">
+                    SEMESTER {{ sem.result.semester.number }} <small class="text-muted fs-7 font-monospace">({{ sem.result.examination.name }})</small>
+                </h5>
+                <div class="rms-table-responsive border border-dark rounded-3 overflow-hidden mb-3">
+                    <table class="table rms-table table-bordered border-dark m-0 text-center align-middle">
+                        <thead class="table-light border-dark">
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th style="width: 120px;">Code</th>
+                                <th class="text-start">Subject Title</th>
+                                <th style="width: 80px;">Credits</th>
+                                <th style="width: 80px;">Grade</th>
+                                <th style="width: 100px;">Grade Point</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sub in sem.subjects %}
+                            <tr class="border-dark text-dark">
+                                <td>{{ forloop.counter }}</td>
+                                <td><span class="font-monospace fw-bold">{{ sub.subject.code }}</span></td>
+                                <td class="text-start">{{ sub.subject.name }}</td>
+                                <td>{{ sub.credits }}</td>
+                                <td><strong class="text-primary">{{ sub.grade }}</strong></td>
+                                <td>{{ sub.grade_point|floatformat:1 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex justify-content-end text-dark">
+                    <div class="p-2 border border-dark border-top-0 rounded-bottom bg-light px-4">
+                        <span class="fw-medium">Semester SGPA: </span>
+                        <strong class="text-primary fs-5">{{ sem.result.sgpa|floatformat:2 }}</strong>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-5 text-muted border border-dashed rounded">
+                <i class="bi bi-file-earmark-lock fs-1 mb-2 d-block text-opacity-50"></i>
+                <p class="m-0 fw-semibold">No published academic results found</p>
+            </div>
+            {% endfor %}
+
+            <!-- Cumulative aggregate footer -->
+            {% if semesters_data %}
+            <div class="rms-card p-4 border border-dark border-2 bg-light mb-5">
+                <div class="row text-center text-dark align-items-center">
+                    <div class="col-md-6 border-end">
+                        <h5 class="fw-bold font-heading mb-1 text-primary">CUMULATIVE ACADEMIC METRICS</h5>
+                        <small class="text-muted">Aggregate summary across all completed semesters</small>
+                    </div>
+                    <div class="col-md-3 border-end">
+                        <small class="text-muted d-block fw-semibold mb-1">TOTAL CREDITS COMPLETED</small>
+                        <span class="fs-3 fw-bold">{{ student.academic_history.total_credits_completed }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-semibold mb-1">OVERALL CGPA</small>
+                        <span class="fs-2 fw-bold text-success">{{ student.academic_history.cgpa|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verification Footer signatures -->
+            <div class="row pt-5 mt-5 border-top border-dark border-opacity-25 justify-content-between text-dark">
+                <div class="col-md-4 text-center">
+                    <small class="text-muted d-block">TRANSCRIPT ISSUED DATE</small>
+                    <span class="fw-semibold">{% now "d F Y" %}</span>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div style="height: 50px;"></div>
+                    <hr class="border-dark border-2 my-1 mx-auto" style="width: 160px;">
+                    <span class="fw-semibold fs-7">Controller of Examinations</span>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

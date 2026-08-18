@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="rms-card">
+            <h4 class="mb-4 font-heading fw-semibold border-bottom pb-2">{{ title }}</h4>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="program" class="form-label fw-semibold">Program</label>
+                    <select id="program" name="program" class="form-select" onchange="filterSemesters()" required>
+                        <option value="">Select Program</option>
+                        {% for prog in programs %}
+                            <option value="{{ prog.id }}" {% if subject.program.id == prog.id %}selected{% endif %}>{{ prog.code }} - {{ prog.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="semester" class="form-label fw-semibold">Semester</label>
+                    <select id="semester" name="semester" class="form-select" required>
+                        <option value="">Select Semester</option>
+                        {% for sem in semesters %}
+                            <option value="{{ sem.id }}" data-program="{{ sem.program.id }}" {% if subject.semester.id == sem.id %}selected{% endif %}>{{ sem.program.code }} - Semester {{ sem.number }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="name" class="form-label fw-semibold">Subject Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Data Structures & Algorithms" value="{{ subject.name|default:'' }}" required>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label for="code" class="form-label fw-semibold">Subject Code</label>
+                        <input type="text" id="code" name="code" class="form-control" placeholder="e.g. CS-301" value="{{ subject.code|default:'' }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="credits" class="form-label fw-semibold">Credits</label>
+                        <input type="number" id="credits" name="credits" class="form-control" min="1" max="10" value="{{ subject.credits|default:4 }}" required>
+                    </div>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" name="is_elective" id="is_elective" {% if subject.is_elective %}checked{% endif %}>
+                    <label class="form-check-label fw-semibold" for="is_elective">
+                        This is an Elective Subject
+                    </label>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                    <a href="{% url 'subject_list' %}" class="btn btn-light fw-semibold">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">Save Subject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterSemesters() {
+        const programSelect = document.getElementById('program');
+        const semesterSelect = document.getElementById('semester');
+        const selectedProgramId = programSelect.value;
+        
+        // Loop through options and show/hide based on program reference
+        for (let i = 0; i < semesterSelect.options.length; i++) {
+            const option = semesterSelect.options[i];
+            if (option.value === "") continue;
+            
+            const progRef = option.getAttribute('data-program');
+            if (selectedProgramId === "" || progRef === selectedProgramId) {
+                option.style.display = "";
+            } else {
+                option.style.display = "none";
+            }
+        }
+        
+        // Reset selection if hidden
+        const selectedOption = semesterSelect.options[semesterSelect.selectedIndex];
+        if (selectedOption.value !== "" && selectedOption.style.display === "none") {
+            semesterSelect.value = "";
+        }
+    }
+    
+    // Run filter once on page load to apply initial selections
+    document.addEventListener('DOMContentLoaded', filterSemesters);
+</script>
+{% endblock %}

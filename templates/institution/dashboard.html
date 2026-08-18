@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Institution Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Institution Administration</h2>
+    <p class="text-muted m-0">Welcome back, admin. Manage academic nodes and monitor system activities.</p>
+</div>
+
+<!-- KPIs Overview Grid -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">TOTAL STUDENTS</small>
+            <span class="fs-2 fw-bold text-primary">{{ total_students }}</span>
+            <a href="{% url 'student_list' %}" class="d-block mt-2 fs-7 text-decoration-none">Manage Directory →</a>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">TOTAL FACULTY</small>
+            <span class="fs-2 fw-bold text-success">{{ total_faculty }}</span>
+            <a href="{% url 'faculty_list' %}" class="d-block mt-2 fs-7 text-decoration-none">Manage Staff →</a>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">ACADEMIC DEPARTMENTS</small>
+            <span class="fs-2 fw-bold text-dark">{{ total_depts }}</span>
+            <a href="{% url 'department_list' %}" class="d-block mt-2 fs-7 text-decoration-none">Manage Catalogue →</a>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">DEGREE PROGRAMS</small>
+            <span class="fs-2 fw-bold text-secondary">{{ total_progs }}</span>
+            <a href="{% url 'program_list' %}" class="d-block mt-2 fs-7 text-decoration-none">Manage Curriculums →</a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Quick Action Dashboard Panels -->
+    <div class="col-lg-6">
+        <div class="rms-card p-4">
+            <h5 class="fw-bold font-heading mb-3 border-bottom pb-2">Quick Administration Actions</h5>
+            <div class="row g-2">
+                <div class="col-6">
+                    <a href="{% url 'student_add' %}" class="btn btn-outline-primary w-100 py-3 fw-semibold text-start shadow-sm">
+                        <i class="bi bi-person-plus fs-4 mb-2 d-block"></i> Add Student
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="{% url 'faculty_add' %}" class="btn btn-outline-primary w-100 py-3 fw-semibold text-start shadow-sm">
+                        <i class="bi bi-person-workspace fs-4 mb-2 d-block"></i> Add Faculty
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="{% url 'examination_create' %}" class="btn btn-outline-primary w-100 py-3 fw-semibold text-start shadow-sm">
+                        <i class="bi bi-calendar-event fs-4 mb-2 d-block"></i> Schedule Exams
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="{% url 'reports' %}" class="btn btn-outline-primary w-100 py-3 fw-semibold text-start shadow-sm">
+                        <i class="bi bi-file-earmark-spreadsheet fs-4 mb-2 d-block"></i> Export Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Recent scheduled Examinations -->
+    <div class="col-lg-6">
+        <div class="rms-card p-4">
+            <h5 class="fw-bold font-heading mb-3 border-bottom pb-2">Recent scheduled Examinations</h5>
+            {% if recent_exams %}
+                <ul class="list-group list-group-flush">
+                    {% for exam in recent_exams %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <strong class="text-dark">{{ exam.name }}</strong>
+                            <small class="text-muted d-block">S{{ exam.semester.number }} — {{ exam.program.code }}</small>
+                        </div>
+                        <span class="badge {% if exam.status == 'ACTIVE' %}bg-success{% else %}bg-secondary{% endif %} bg-opacity-10 text-{% if exam.status == 'ACTIVE' %}success{% else %}secondary{% endif %}">
+                            {{ exam.status }}
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted text-center py-4">No examination schedules published yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

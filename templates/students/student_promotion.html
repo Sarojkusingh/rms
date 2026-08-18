@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Bulk Students Promotion{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="rms-card">
+            <h4 class="mb-4 font-heading fw-semibold border-bottom pb-2">Bulk Semester Promotion</h4>
+            <p class="text-muted mb-4">Promote student cohorts of a specific degree program to the next semester. This action will update student status records and log new semester enrollments.</p>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="program" class="form-label fw-semibold">Degree Program</label>
+                    <select id="program" name="program" class="form-select" required>
+                        <option value="">Select Program</option>
+                        {% for prog in programs %}
+                            <option value="{{ prog.id }}">{{ prog.code }} - {{ prog.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="current_semester" class="form-label fw-semibold">Current Semester of Students</label>
+                    <select id="current_semester" name="current_semester" class="form-select" required>
+                        <option value="">Select Semester</option>
+                        {% for i in "12345678" %}
+                            <option value="{{ i }}">Semester {{ i }}</option>
+                        {% endfor %}
+                    </select>
+                    <small class="text-muted">Students currently in this semester will be incremented by 1 (e.g., Semester 2 -> Semester 3).</small>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                    <a href="{% url 'student_list' %}" class="btn btn-light fw-semibold">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold" onclick="return confirm('Are you sure you want to promote all active students in the selected program and semester?')">
+                        Execute Bulk Promotion <i class="bi bi-arrow-up-circle ms-1"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

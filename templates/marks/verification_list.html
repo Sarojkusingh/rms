@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}HOD Marks Approvals{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Submitted Marks Approvals</h2>
+    <p class="text-muted m-0">Review, verify, and approve student marks submitted by faculty members</p>
+</div>
+
+<!-- Pending Approvals Grid Table -->
+<div class="rms-card p-0 overflow-hidden">
+    <div class="rms-table-responsive">
+        <table class="table rms-table align-middle">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">#</th>
+                    <th>Examination</th>
+                    <th>Subject Code</th>
+                    <th>Subject Name</th>
+                    <th>Section</th>
+                    <th>Record Count</th>
+                    <th style="text-align: right; width: 200px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for g in groups %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td class="fw-semibold text-dark">{{ g.exam_registration__examination__name }}</td>
+                    <td><span class="badge bg-secondary font-monospace">{{ g.subject__code }}</span></td>
+                    <td class="fw-medium">{{ g.subject__name }}</td>
+                    <td>{{ g.exam_registration__student__section__name|default:"All Sections" }}</td>
+                    <td><strong>{{ g.count }}</strong> Students</td>
+                    <td style="text-align: right;">
+                        {% if g.exam_registration__student__section__id %}
+                            <a href="{% url 'marks_approve_reject' g.exam_registration__examination__id g.subject__id g.exam_registration__student__section__id %}" class="btn btn-primary btn-sm fw-semibold">
+                                Review Sheet <i class="bi bi-chevron-right ms-1"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'marks_approve_reject_no_sec' g.exam_registration__examination__id g.subject__id %}" class="btn btn-primary btn-sm fw-semibold">
+                                Review Sheet <i class="bi bi-chevron-right ms-1"></i>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="bi bi-patch-check-fill fs-1 mb-2 d-block text-success text-opacity-50"></i>
+                        <p class="m-0 fw-semibold">No pending approvals</p>
+                        <p class="m-0 text-muted" style="font-size: 0.85rem;">All submitted student marks sheets are fully reviewed and verified.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

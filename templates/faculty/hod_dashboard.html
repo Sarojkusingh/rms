@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}HOD Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Department of {{ dept.name }}</h2>
+    <p class="text-muted m-0">Head of Department panel. Monitor classes, verify marks sheets, and evaluate student records.</p>
+</div>
+
+<!-- Department Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">DEPARTMENT ENROLLMENT SIZE</small>
+            <span class="fs-2 fw-bold text-primary">{{ total_students }} Students</span>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">DEPARTMENT TEACHING STAFF</small>
+            <span class="fs-2 fw-bold text-success">{{ total_faculty }} Members</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Pending Marks approvals -->
+    <div class="col-lg-6">
+        <div class="rms-card p-4 h-100 d-flex flex-column">
+            <h5 class="fw-bold font-heading mb-3 border-bottom pb-2">Pending Marks Approvals</h5>
+            <p class="text-muted fs-7 mb-3">Student marks sheets submitted by department teaching faculty that require HOD evaluation.</p>
+            
+            {% if pending_approvals %}
+                <ul class="list-group list-group-flush mb-4">
+                    {% for item in pending_approvals %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <span class="badge bg-secondary font-monospace">{{ item.subject__code }}</span>
+                            <span class="fw-medium text-dark ms-2">{{ item.subject__name }}</span>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">{{ item.count }} Students</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'marks_verification_list' %}" class="btn btn-primary fw-semibold mt-auto w-100 py-2">
+                    Open Review Queue <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            {% else %}
+                <div class="text-center py-4 text-muted my-auto">
+                    <i class="bi bi-patch-check-fill text-success fs-1"></i>
+                    <p class="mt-2 mb-0 fw-semibold">No pending marks approvals</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Column: Recent Results -->
+    <div class="col-lg-6">
+        <div class="rms-card p-4">
+            <h5 class="fw-bold font-heading mb-3 border-bottom pb-2">Recent Published Results</h5>
+            {% if recent_results %}
+                <ul class="list-group list-group-flush">
+                    {% for r in recent_results %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <strong class="text-dark">{{ r.student.user.get_full_name }}</strong>
+                            <small class="text-muted d-block">Roll: {{ r.student.student_id }} — Semester {{ r.semester.number }}</small>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block text-end">SGPA</small>
+                            <strong class="text-primary">{{ r.sgpa|floatformat:2 }}</strong>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted text-center py-4">No published student results in this department yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

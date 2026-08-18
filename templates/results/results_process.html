@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Result Engine Processing{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Academic Result Engine</h2>
+    <p class="text-muted m-0">Process results, evaluate SGPA/CGPA averages, and manage publishing approvals</p>
+</div>
+
+<!-- Filters Panel -->
+<div class="rms-card p-3 mb-4 no-print">
+    <form method="GET" class="row g-2">
+        <div class="col-md-3">
+            <select name="examination" class="form-select" required>
+                <option value="">Select Examination</option>
+                {% for exam in exams %}
+                    <option value="{{ exam.id }}" {% if exam_filter == exam.id %}selected{% endif %}>{{ exam.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="program" class="form-select" required>
+                <option value="">Select Program</option>
+                {% for prog in programs %}
+                    <option value="{{ prog.id }}" {% if prog_filter == prog.id %}selected{% endif %}>{{ prog.code }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="semester" class="form-select" required>
+                <option value="">Select Semester</option>
+                {% for sem in semesters %}
+                    <option value="{{ sem.id }}" {% if sem_filter == sem.id %}selected{% endif %}>S{{ sem.number }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100 fw-semibold"><i class="bi bi-gear-fill"></i> Load Batch</button>
+        </div>
+    </form>
+</div>
+
+{% if exam_filter and prog_filter and sem_filter %}
+    
+    <!-- Calculation Trigger Panel (if empty) -->
+    {% if not results %}
+    <div class="rms-card text-center py-5 mb-4">
+        <i class="bi bi-cpu fs-1 text-muted mb-2 d-block"></i>
+        <h4 class="fw-semibold">No Results Processed Yet</h4>
+        <p class="text-muted mb-4" style="max-width: 500px; margin: 0 auto;">Active marks sheets for this semester must be locked by the Exam Cell first. Click calculate to generate initial results summaries.</p>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="examination" value="{{ exam_filter }}">
+            <input type="hidden" name="program" value="{{ prog_filter }}">
+            <input type="hidden" name="semester" value="{{ sem_filter }}">
+            <button type="submit" name="calculate" class="btn btn-primary px-5 py-2.5 fw-semibold shadow-sm">
+                <i class="bi bi-play-circle-fill me-1"></i> Calculate Student Results
+            </button>
+        </form>
+    </div>
+    {% else %}
+    
+    <!-- Statistics Overview Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="rms-card p-3 mb-0 text-center">
+                <small class="text-muted d-block">Calculated Students</small>
+                <span class="fs-2 fw-bold text-dark">{{ stats.total }}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="rms-card p-3 mb-0 text-center bg-success bg-opacity-10 border-success border-opacity-25">
+                <small class="text-success fw-medium d-block">Passed Students</small>
+                <span class="fs-2 fw-bold text-success">{{ stats.pass }}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="rms-card p-3 mb-0 text-center bg-danger bg-opacity-10 border-danger border-opacity-25">
+                <small class="text-danger fw-medium d-block">Failed Students</small>
+                <span class="fs-2 fw-bold text-danger">{{ stats.fail }}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="rms-card p-3 mb-0 text-center bg-primary bg-opacity-10 border-primary border-opacity-25">
+                <small class="text-primary fw-medium d-block">Average SGPA</small>
+                <span class="fs-2 fw-bold text-primary">{{ stats.avg|floatformat:2 }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approvals Timeline Action Bar -->
+    <div class="rms-card p-3 mb-4 bg-light d-flex justify-content-between align-items-center flex-wrap">
+        <div>
+            <h6 class="fw-bold m-0 text-dark">Result Workflow Step</h6>
+            <span class="text-muted fs-7">Current Stage: <strong>{{ results.0.get_status_display }}</strong></span>
+        </div>
+        
+        <form method="POST" action="{% url 'results_approve_publish' %}" class="d-flex gap-2">
+            {% csrf_token %}
+            <input type="hidden" name="examination" value="{{ exam_filter }}">
+            <input type="hidden" name="program" value="{{ prog_filter }}">
+            <input type="hidden" name="semester" value="{{ sem_filter }}">
+            
+            {% if results.0.status == 'CALCULATED' and user.role == 'HOD' %}
+                <button type="submit" name="action" value="review" class="btn btn-primary fw-semibold">
+                    Verify & Submit for Controller Approval <i class="bi bi-chevron-right ms-1"></i>
+                </button>
+            {% elif results.0.status == 'REVIEWED' and user.role == 'EXAM_CONTROLLER' %}
+                <button type="submit" name="action" value="approve" class="btn btn-primary fw-semibold">
+                    Approve Results Batch <i class="bi bi-check-circle ms-1"></i>
+                </button>
+            {% elif results.0.status == 'APPROVED' and user.role == 'EXAM_CONTROLLER' %}
+                <button type="submit" name="action" value="publish" class="btn btn-success fw-semibold" onclick="return confirm('Publishing these results will lock calculation values and send notifications to all students. Are you sure?')">
+                    Publish Academic Results <i class="bi bi-send-check-fill ms-1"></i>
+                </button>
+            {% else %}
+                <span class="text-muted fs-7 align-self-center"><i class="bi bi-shield-check text-success fs-5"></i> Results fully processed or waiting on HOD/Controller stage updates.</span>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Calculated Results Grid Table -->
+    <div class="rms-card p-0 overflow-hidden">
+        <div class="rms-table-responsive">
+            <table class="table rms-table align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">#</th>
+                        <th>Student Roll</th>
+                        <th>Full Name</th>
+                        <th>Percentage</th>
+                        <th>SGPA</th>
+                        <th>CGPA</th>
+                        <th>Result Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in results %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><span class="badge bg-secondary font-monospace">{{ r.student.student_id }}</span></td>
+                        <td class="fw-semibold">{{ r.student.user.get_full_name }}</td>
+                        <td>{{ r.percentage }}%</td>
+                        <td><strong class="text-primary">{{ r.sgpa|floatformat:2 }}</strong></td>
+                        <td>{{ r.cgpa|floatformat:2 }}</td>
+                        <td>
+                            {% if r.status == 'PUBLISHED' %}
+                                <span class="badge bg-success bg-opacity-10 text-success">Published</span>
+                            {% elif r.status == 'APPROVED' %}
+                                <span class="badge bg-info bg-opacity-10 text-info">Approved</span>
+                            {% else %}
+                                <span class="badge bg-warning bg-opacity-10 text-warning">{{ r.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+{% endif %}
+{% endblock %}

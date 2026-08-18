@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Review Marks Sheet{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'marks_verification_list' %}" class="btn btn-link text-decoration-none text-muted p-0 mb-2"><i class="bi bi-arrow-left"></i> Back to Approvals</a>
+    <h2 class="font-heading fw-bold m-0">Review Student Marks Sheet</h2>
+    <p class="text-muted m-0">Verify calculations and approve/reject the faculty-submitted scores</p>
+</div>
+
+<!-- Records List -->
+<div class="rms-card p-0 overflow-hidden mb-4">
+    <div class="rms-table-responsive">
+        <table class="table rms-table align-middle text-center">
+            <thead>
+                <tr>
+                    <th class="text-start" style="width: 150px;">Roll / ID</th>
+                    <th class="text-start">Student Name</th>
+                    <th>Internal</th>
+                    <th>Theory</th>
+                    <th>Practical</th>
+                    <th>Assignment</th>
+                    <th>Attendance</th>
+                    <th>Total</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr class="text-dark">
+                    <td class="text-start"><span class="badge bg-secondary font-monospace">{{ r.exam_registration.student.student_id }}</span></td>
+                    <td class="text-start fw-medium">{{ r.exam_registration.student.user.get_full_name }}</td>
+                    <td>{{ r.internal_marks }}</td>
+                    <td>{{ r.theory_marks }}</td>
+                    <td>{{ r.practical_marks }}</td>
+                    <td>{{ r.assignment_marks }}</td>
+                    <td>{{ r.attendance_marks }}</td>
+                    <td><strong class="text-primary">{{ r.total_marks }}</strong></td>
+                    <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ r.grade|default:'F' }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- HOD Action Form -->
+<div class="rms-card p-4">
+    <h5 class="fw-bold font-heading mb-3 border-bottom pb-2">Verification Decision</h5>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="remarks" class="form-label fw-semibold">Review Comments / Remarks (Optional for approval, required for rejection)</label>
+            <textarea id="remarks" name="remarks" class="form-control" rows="3" placeholder="Enter feedback for the teaching faculty..."></textarea>
+        </div>
+        
+        <div class="d-flex justify-content-end gap-2 pt-2">
+            <button type="submit" name="action" value="reject" class="btn btn-outline-danger fw-semibold px-4" onclick="return checkRemarksForRejection()">
+                <i class="bi bi-x-circle me-1"></i> Reject & Request Correction
+            </button>
+            <button type="submit" name="action" value="approve" class="btn btn-success fw-semibold px-4">
+                <i class="bi bi-check-circle-fill me-1"></i> Approve Scores
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function checkRemarksForRejection() {
+        const remarks = document.getElementById('remarks').value.trim();
+        if (!remarks) {
+            alert("Error: Review comments are required when rejecting marks sheets so the faculty understands what corrections to make.");
+            return false;
+        }
+        return confirm("Are you sure you want to reject this marks sheet and send it back to the faculty?");
+    }
+</script>
+{% endblock %}

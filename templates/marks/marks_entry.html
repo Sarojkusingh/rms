@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Marks Entry Portal{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Marks Entry Portal</h2>
+    <p class="text-muted m-0">Select class targets and record student marks sheets</p>
+</div>
+
+<!-- Class Filters Panel -->
+<div class="rms-card p-3 mb-4 no-print">
+    <form method="GET" class="row g-2">
+        <div class="col-md-3">
+            <select name="examination" class="form-select" required>
+                <option value="">Select Examination</option>
+                {% for exam in exams %}
+                    <option value="{{ exam.id }}" {% if exam_filter == exam.id %}selected{% endif %}>{{ exam.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="program" class="form-select" required>
+                <option value="">Select Program</option>
+                {% for prog in programs %}
+                    <option value="{{ prog.id }}" {% if prog_filter == prog.id %}selected{% endif %}>{{ prog.code }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="semester" class="form-select" required>
+                <option value="">Select Semester</option>
+                {% for sem in semesters %}
+                    <option value="{{ sem.id }}" {% if sem_filter == sem.id %}selected{% endif %}>S{{ sem.number }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="subject" class="form-select" required>
+                <option value="">Select Subject</option>
+                {% for sub in subjects %}
+                    <option value="{{ sub.id }}" {% if sub_filter == sub.id %}selected{% endif %}>{{ sub.code }} - {{ sub.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100 fw-semibold"><i class="bi bi-funnel"></i> Load Students</button>
+        </div>
+    </form>
+</div>
+
+{% if exam_sub %}
+<!-- Subject Configuration Header -->
+<div class="rms-card p-3 mb-4 bg-light d-flex justify-content-between align-items-center flex-wrap">
+    <div>
+        <h5 class="fw-bold font-heading mb-1 text-dark">{{ exam_sub.subject.code }} — {{ exam_sub.subject.name }}</h5>
+        <span class="text-muted fs-7">Maximum Marks: <strong>{{ exam_sub.max_marks }}</strong> | Passing Marks: <strong>{{ exam_sub.passing_marks }}</strong></span>
+    </div>
+    <div>
+        <span class="badge bg-secondary p-2.5 fs-7">Status: {{ marks_status }}</span>
+    </div>
+</div>
+
+<!-- Marks Grid Table -->
+<div class="rms-card p-0 overflow-hidden mb-4">
+    <div class="rms-table-responsive">
+        <table class="table rms-table align-middle">
+            <thead>
+                <tr class="text-center">
+                    <th class="text-start" style="width: 150px;">Roll / ID</th>
+                    <th class="text-start">Student Name</th>
+                    <th style="width: 100px;">Internal</th>
+                    <th style="width: 100px;">Theory</th>
+                    <th style="width: 100px;">Practical</th>
+                    <th style="width: 100px;">Assignment</th>
+                    <th style="width: 100px;">Attendance</th>
+                    <th style="width: 100px;">Total</th>
+                    <th style="width: 80px;">Grade</th>
+                    <th style="width: 180px;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for st in students_data %}
+                <tr class="text-center align-middle" data-marks-id="{{ st.marks.id }}">
+                    <td class="text-start"><span class="badge bg-secondary font-monospace">{{ st.student_id }}</span></td>
+                    <td class="text-start fw-medium">{{ st.name }}</td>
+                    
+                    <td>
+                        <input type="number" class="form-control form-control-sm text-center marks-input" data-component="internal" value="{{ st.marks.internal_marks }}" {% if st.marks.status != 'DRAFT' and st.marks.status != 'REJECTED' %}disabled{% endif %} step="0.5" min="0">
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm text-center marks-input" data-component="theory" value="{{ st.marks.theory_marks }}" {% if st.marks.status != 'DRAFT' and st.marks.status != 'REJECTED' %}disabled{% endif %} step="0.5" min="0">
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm text-center marks-input" data-component="practical" value="{{ st.marks.practical_marks }}" {% if st.marks.status != 'DRAFT' and st.marks.status != 'REJECTED' %}disabled{% endif %} step="0.5" min="0">
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm text-center marks-input" data-component="assignment" value="{{ st.marks.assignment_marks }}" {% if st.marks.status != 'DRAFT' and st.marks.status != 'REJECTED' %}disabled{% endif %} step="0.5" min="0">
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm text-center marks-input" data-component="attendance" value="{{ st.marks.attendance_marks }}" {% if st.marks.status != 'DRAFT' and st.marks.status != 'REJECTED' %}disabled{% endif %} step="0.5" min="0">
+                    </td>
+                    
+                    <td>
+                        <strong class="total-display text-primary">{{ st.marks.total_marks }}</strong>
+                    </td>
+                    <td>
+                        <span class="badge bg-primary bg-opacity-10 text-primary grade-display">{{ st.marks.grade|default:'N/A' }}</span>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <span class="status-indicator fs-7 text-muted">{{ st.marks.get_status_display }}</span>
+                            <div class="spinner-border spinner-border-sm text-primary ms-2 d-none save-spinner" role="status"></div>
+                            <i class="bi bi-cloud-check-fill text-success ms-2 d-none save-success" title="Draft saved"></i>
+                            <i class="bi bi-cloud-slash-fill text-danger ms-2 d-none save-error" title="Saving failed"></i>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Submit to HOD Form -->
+{% if students_data and students_data.0.marks.status == 'DRAFT' or students_data.0.marks.status == 'REJECTED' %}
+<div class="d-flex justify-content-end p-3 border rounded bg-light" style="border-radius: var(--radius-lg) !important;">
+    <form method="POST" action="{% url 'marks_submit' %}">
+        {% csrf_token %}
+        <input type="hidden" name="examination" value="{{ exam_filter }}">
+        <input type="hidden" name="subject" value="{{ sub_filter }}">
+        <input type="hidden" name="section" value="{{ sec_filter }}">
+        <button type="submit" class="btn btn-primary fw-semibold px-4" onclick="return confirm('Are you sure you want to submit these marks to HOD for verification? Once submitted, you cannot edit them until rejected.')">
+            Submit Marks to HOD <i class="bi bi-send-fill ms-1"></i>
+        </button>
+    </form>
+</div>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('.marks-input');
+        
+        inputs.forEach(input => {
+            input.addEventListener('change', async (e) => {
+                const tr = e.target.closest('tr');
+                const marksId = tr.getAttribute('data-marks-id');
+                
+                // Indicators
+                const spinner = tr.querySelector('.save-spinner');
+                const successIcon = tr.querySelector('.save-success');
+                const errorIcon = tr.querySelector('.save-error');
+                const statusIndicator = tr.querySelector('.status-indicator');
+                
+                spinner.classList.remove('d-none');
+                successIcon.classList.add('d-none');
+                errorIcon.classList.add('d-none');
+                
+                // Extract component values
+                const internal = parseFloat(tr.querySelector('[data-component="internal"]').value) || 0;
+                const theory = parseFloat(tr.querySelector('[data-component="theory"]').value) || 0;
+                const practical = parseFloat(tr.querySelector('[data-component="practical"]').value) || 0;
+                const assignment = parseFloat(tr.querySelector('[data-component="assignment"]').value) || 0;
+                const attendance = parseFloat(tr.querySelector('[data-component="attendance"]').value) || 0;
+                
+                const postData = {
+                    marks_id: parseInt(marksId),
+                    internal: internal,
+                    theory: theory,
+                    practical: practical,
+                    assignment: assignment,
+                    attendance: attendance
+                };
+                
+                // Send AJAX save request using main.js AJAX helper
+                const response = await sendAjaxRequest("{% url 'save_marks_ajax' %}", postData);
+                spinner.classList.add('d-none');
+                
+                if (response.success) {
+                    successIcon.classList.remove('d-none');
+                    tr.querySelector('.total-display').textContent = response.total;
+                    tr.querySelector('.grade-display').textContent = response.grade;
+                    
+                    // Clear error states if any
+                    tr.querySelectorAll('input').forEach(i => i.classList.remove('is-invalid'));
+                } else {
+                    errorIcon.classList.remove('d-none');
+                    e.target.classList.add('is-invalid');
+                    alert(`Validation Error: ${response.error}`);
+                }
+            });
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}

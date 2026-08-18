@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Subjects Catalog{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="font-heading fw-bold m-0">Subjects Catalog</h2>
+        <p class="text-muted m-0">Manage and assign curriculum subjects to classes</p>
+    </div>
+    {% if user.is_institution_admin %}
+    <a href="{% url 'subject_add' %}" class="btn btn-primary fw-semibold shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> Add Subject
+    </a>
+    {% endif %}
+</div>
+
+<!-- Search & Filters Panel -->
+<div class="rms-card p-3 mb-4">
+    <form method="GET" class="row g-2">
+        <div class="col-md-3">
+            <select name="program" class="form-select">
+                <option value="">Filter by Program</option>
+                {% for prog in programs %}
+                    <option value="{{ prog.id }}" {% if program_filter == prog.id %}selected{% endif %}>{{ prog.code }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="semester" class="form-select">
+                <option value="">Filter by Semester</option>
+                {% for sem in semesters %}
+                    <option value="{{ sem.id }}" {% if semester_filter == sem.id %}selected{% endif %}>{{ sem.program.code }} - S{{ sem.number }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <input type="text" name="q" class="form-control" placeholder="Search by name or code..." value="{{ q }}">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100 fw-semibold">Filter</button>
+        </div>
+    </form>
+</div>
+
+<!-- Subjects Table -->
+<div class="rms-card p-0 overflow-hidden">
+    <div class="rms-table-responsive">
+        <table class="table rms-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">#</th>
+                    <th style="width: 150px;">Code</th>
+                    <th>Subject Name</th>
+                    <th>Program</th>
+                    <th>Semester</th>
+                    <th>Credits</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in subjects %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><span class="badge bg-secondary px-2.5 py-1.5 fs-7">{{ sub.code }}</span></td>
+                    <td class="fw-medium">{{ sub.name }}</td>
+                    <td>{{ sub.program.name }} ({{ sub.program.code }})</td>
+                    <td>Semester {{ sub.semester.number }}</td>
+                    <td><span class="fw-semibold text-primary">{{ sub.credits }}</span> Credits</td>
+                    <td>
+                        {% if sub.is_elective %}
+                            <span class="badge bg-info bg-opacity-10 text-info">Elective</span>
+                        {% else %}
+                            <span class="badge bg-success bg-opacity-10 text-success">Core</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="bi bi-journal-x fs-1 mb-2 d-block text-opacity-50"></i>
+                        <p class="m-0 fw-semibold">No subjects cataloged</p>
+                        <p class="m-0 text-muted" style="font-size: 0.85rem;">Click "Add Subject" to configure one.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

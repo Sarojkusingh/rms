@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Semester Marksheet - {{ result.student.user.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-lg-9">
+        
+        <!-- Action bar -->
+        <div class="d-flex justify-content-between mb-4 no-print">
+            {% if request.user.role == 'STUDENT' %}
+                <a href="{% url 'student_results' %}" class="btn btn-outline-secondary fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Results
+                </a>
+            {% else %}
+                <a href="{% url 'results_process' %}?examination={{ result.examination.id }}&program={{ result.student.program.id }}&semester={{ result.semester.id }}" class="btn btn-outline-secondary fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Processing
+                </a>
+            {% endif %}
+            <button onclick="window.print()" class="btn btn-primary fw-semibold shadow-sm">
+                <i class="bi bi-printer me-1"></i> Print Marksheet / PDF
+            </button>
+        </div>
+
+        <!-- Official Marksheet Card -->
+        <div class="rms-card p-5 border-2 border-dark" style="border-style: double !important; border-radius: var(--radius-lg); background-color: #ffffff; color: #000000;">
+            
+            <!-- Institution Header -->
+            <div class="text-center pb-3 border-bottom border-2 border-dark mb-4">
+                {% if current_institution.logo %}
+                    <img src="{{ current_institution.logo.url }}" alt="Logo" height="60" class="mb-2">
+                {% endif %}
+                <h2 class="font-heading fw-bold text-dark mb-1">{{ current_institution.name|upper }}</h2>
+                <h5 class="text-muted font-heading m-0">{{ current_institution.address|default:"" }}</h5>
+                <h6 class="fw-bold font-heading mt-3 mb-0 text-primary" style="letter-spacing: 1.5px;">SEMESTER GRADE RECORD CARD</h6>
+            </div>
+
+            <!-- Student Metadata Grid -->
+            <div class="row mb-4" style="line-height: 1.8; font-size: 0.9rem;">
+                <div class="col-md-6 border-end">
+                    <p class="mb-1"><strong>Student Name:</strong> <span class="text-dark fw-semibold">{{ result.student.user.get_full_name|upper }}</span></p>
+                    <p class="mb-1"><strong>Roll Number / ID:</strong> <span class="text-dark font-monospace fw-bold">{{ result.student.student_id }}</span></p>
+                    <p class="mb-1"><strong>Registration Number:</strong> <span class="text-dark font-monospace">{{ result.student.registration_number|default:"N/A" }}</span></p>
+                </div>
+                <div class="col-md-6 ps-md-4">
+                    <p class="mb-1"><strong>Program:</strong> <span class="text-dark">{{ result.student.program.name }}</span></p>
+                    <p class="mb-1"><strong>Semester:</strong> <span class="text-dark">Semester {{ result.semester.number }}</span></p>
+                    <p class="mb-0"><strong>Academic Session:</strong> <span class="text-dark">{{ result.examination.academic_session.name }}</span></p>
+                </div>
+            </div>
+
+            <!-- Subject Grades Table -->
+            <div class="rms-table-responsive border border-dark rounded-3 overflow-hidden mb-4">
+                <table class="table rms-table table-bordered border-dark m-0 text-center align-middle">
+                    <thead class="table-light border-dark">
+                        <tr>
+                            <th style="width: 60px;">#</th>
+                            <th style="width: 120px;">Subject Code</th>
+                            <th class="text-start">Subject Name</th>
+                            <th style="width: 80px;">Credits</th>
+                            <th style="width: 100px;">Total Marks</th>
+                            <th style="width: 80px;">Grade</th>
+                            <th style="width: 100px;">Grade Point</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub in result_subjects %}
+                        <tr class="border-dark text-dark">
+                            <td>{{ forloop.counter }}</td>
+                            <td><span class="font-monospace fw-bold">{{ sub.subject.code }}</span></td>
+                            <td class="text-start">{{ sub.subject.name }}</td>
+                            <td>{{ sub.credits }}</td>
+                            <td>{{ sub.total_marks }}</td>
+                            <td><strong class="text-primary">{{ sub.grade }}</strong></td>
+                            <td>{{ sub.grade_point|floatformat:1 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Grade Card summary metrics -->
+            <div class="rms-card p-3 bg-light border border-dark border-opacity-50 mb-5">
+                <div class="row text-center text-dark">
+                    <div class="col-md-3 border-end">
+                        <small class="text-muted d-block fw-semibold mb-1">TOTAL CREDITS</small>
+                        <span class="fs-4 fw-bold">{{ result.total_credits }}</span>
+                    </div>
+                    <div class="col-md-3 border-end">
+                        <small class="text-muted d-block fw-semibold mb-1">EARNED CREDITS</small>
+                        <span class="fs-4 fw-bold text-success">{{ result.earned_credits }}</span>
+                    </div>
+                    <div class="col-md-3 border-end">
+                        <small class="text-muted d-block fw-semibold mb-1">SEMESTER SGPA</small>
+                        <span class="fs-4 fw-bold text-primary">{{ result.sgpa|floatformat:2 }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-semibold mb-1">CUMULATIVE CGPA</small>
+                        <span class="fs-4 fw-bold">{{ result.cgpa|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QR Verification & Signature blocks -->
+            <div class="row pt-4 justify-content-between align-items-end text-dark">
+                <!-- QR Verification Code column -->
+                <div class="col-md-5 d-flex gap-3 align-items-center">
+                    {% if qr_code %}
+                        <img src="data:image/png;base64,{{ qr_code }}" alt="Verification QR Code" width="100" height="100" class="border">
+                    {% endif %}
+                    <div>
+                        <small class="text-muted d-block">VERIFICATION SECURE ID</small>
+                        <span class="font-monospace fs-7 text-dark fw-bold">{{ result.verification_id }}</span>
+                        <small class="text-muted d-block mt-1">Scan to verify this marksheet online.</small>
+                    </div>
+                </div>
+                
+                <!-- Signature Blocks column -->
+                <div class="col-md-5">
+                    <div class="d-flex justify-content-around text-center">
+                        <div>
+                            <div style="height: 50px;"></div>
+                            <hr class="border-dark border-2 my-1" style="width: 120px;">
+                            <small class="fw-semibold fs-7">Registrar / Dean</small>
+                        </div>
+                        <div>
+                            <div style="height: 50px;"></div>
+                            <hr class="border-dark border-2 my-1" style="width: 140px;">
+                            <small class="fw-semibold fs-7">Controller of Exams</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

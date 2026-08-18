@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-3 no-print">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2 font-heading fw-bold fs-4 text-primary" href="{% url 'home' %}">
+            <i class="bi bi-mortarboard-fill fs-3"></i> RMS SaaS
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#publicNavbar" aria-controls="publicNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="publicNavbar">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 font-heading">
+                <li class="nav-item">
+                    <a class="nav-link px-3 fw-medium" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3 fw-medium" href="{% url 'features' %}">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3 fw-medium" href="{% url 'pricing' %}">Pricing</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3 fw-medium" href="{% url 'about' %}">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3 fw-medium" href="{% url 'contact' %}">Contact</a>
+                </li>
+            </ul>
+            
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'login' %}" class="btn btn-outline-primary fw-semibold px-4" style="border-radius: var(--radius-md);">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                </a>
+                <a href="{% url 'register' %}" class="btn btn-primary fw-semibold px-4 shadow-sm" style="border-radius: var(--radius-md);">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>

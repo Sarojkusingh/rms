@@ -1,0 +1,44 @@
+{% {% include  "base.html" %}
+
+{% block title %}About Us - RMS SaaS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2 fw-semibold">About RMS SaaS</span>
+            <h1 class="display-4 font-heading fw-bold mb-4">Empowering Educational Excellence</h1>
+            <p class="lead text-muted">RMS SaaS is built to streamline academic administration, examination scoring, transcript processing, and result publication for modern institutions globally.</p>
+            <p class="text-muted">Our platform eliminates manual spreadsheet calculations, reduces transcript processing turnarounds from weeks to seconds, and provides enterprise security with audit trails for every grade modified.</p>
+        </div>
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm p-4 bg-light" style="border-radius: var(--radius-lg);">
+                <h4 class="font-heading fw-bold mb-3">Why Choose RMS SaaS?</h4>
+                <ul class="list-unstyled">
+                    <li class="d-flex align-items-start gap-3 mb-3">
+                        <i class="bi bi-check-circle-fill text-primary fs-5 mt-1"></i>
+                        <div>
+                            <h6 class="m-0 font-heading fw-semibold">99.9% Uptime SLA</h6>
+                            <small class="text-muted">Cloud infrastructure designed for heavy exam result publish traffic spikes.</small>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-3 mb-3">
+                        <i class="bi bi-check-circle-fill text-primary fs-5 mt-1"></i>
+                        <div>
+                            <h6 class="m-0 font-heading fw-semibold">Bank-Grade Security</h6>
+                            <small class="text-muted">Role-based access control, cryptographic verification QR codes, and audit logging.</small>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-3">
+                        <i class="bi bi-check-circle-fill text-primary fs-5 mt-1"></i>
+                        <div>
+                            <h6 class="m-0 font-heading fw-semibold">Instant Setup</h6>
+                            <small class="text-muted">Get your institution onboarded in under 5 minutes with our guided wizard.</small>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

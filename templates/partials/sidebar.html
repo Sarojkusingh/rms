@@ -1,0 +1,35 @@
+{% load static %}
+<!-- Desktop Sidebar -->
+<aside class="app-sidebar d-none d-md-flex no-print">
+    <div class="sidebar-brand">
+        <i class="bi bi-mortarboard-fill fs-3 me-2 text-primary"></i>
+        <span class="fs-4 font-heading" style="font-weight: 700;">RMS SaaS</span>
+    </div>
+    
+    <ul class="sidebar-nav">
+        {% include 'partials/sidebar_links.html' %}
+    </ul>
+    
+    <div class="p-3 border-top border-secondary mt-auto text-center" style="font-size: 0.8rem; opacity: 0.7;">
+        <span>v2.1.0 © 2026</span>
+    </div>
+</aside>
+
+<!-- Mobile Offcanvas Sidebar -->
+<div class="offcanvas offcanvas-start bg-dark text-white no-print d-md-none" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+    <div class="offcanvas-header border-bottom border-secondary">
+        <h5 class="offcanvas-title d-flex align-items-center" id="sidebarOffcanvasLabel">
+            <i class="bi bi-mortarboard-fill fs-3 me-2 text-primary"></i>
+            <span class="font-heading fw-bold">RMS SaaS</span>
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <ul class="sidebar-nav">
+            {% include 'partials/sidebar_links.html' %}
+        </ul>
+        <div class="p-3 border-top border-secondary text-center mt-auto" style="font-size: 0.8rem; opacity: 0.7;">
+            <span>v2.1.0 © 2026</span>
+        </div>
+    </div>
+</div>

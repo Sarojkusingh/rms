@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - RMS SaaS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center mb-5">
+            <h1 class="display-4 font-heading fw-bold text-dark">Get in Touch</h1>
+            <p class="lead text-muted">Have questions about RMS SaaS? Want to book a live demo for your institution? Send us a message.</p>
+        </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm p-4" style="border-radius: var(--radius-lg);">
+                <form method="POST" action="{% url 'contact' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label font-heading fw-semibold">Your Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label font-heading fw-semibold">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="john@institution.edu" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="institution" class="form-label font-heading fw-semibold">Institution Name</label>
+                        <input type="text" class="form-control" id="institution" name="institution" placeholder="Global University">
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label font-heading fw-semibold">Message / Inquiry</label>
+                        <textarea class="form-control" id="message" name="message" rows="4" placeholder="Tell us about your requirements..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold" style="border-radius: var(--radius-md);">
+                        <i class="bi bi-send me-2"></i> Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4 bg-light h-100" style="border-radius: var(--radius-lg);">
+                <h4 class="font-heading fw-bold mb-4">Contact Information</h4>
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <div class="bg-primary text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; flex-shrink: 0;">
+                        <i class="bi bi-geo-alt fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class="m-0 font-heading fw-semibold">Headquarters</h6>
+                        <p class="text-muted m-0 small">RMS SaaS Systems Inc.<br>Tech Park, Suite 400</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <div class="bg-primary text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; flex-shrink: 0;">
+                        <i class="bi bi-envelope fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class="m-0 font-heading fw-semibold">Email Us</h6>
+                        <p class="text-muted m-0 small">support@rmssaas.com<br>sales@rmssaas.com</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3">
+                    <div class="bg-primary text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; flex-shrink: 0;">
+                        <i class="bi bi-clock fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class="m-0 font-heading fw-semibold">Support Hours</h6>
+                        <p class="text-muted m-0 small">Mon - Fri: 9:00 AM - 6:00 PM<br>24/7 Priority Support for Enterprise</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

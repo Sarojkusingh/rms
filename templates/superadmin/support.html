@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Support Queue{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Platform Support Queue</h2>
+    <p class="text-muted m-0">Review and resolve customer queries and technical help tickets.</p>
+</div>
+
+<!-- Support Tickets Table -->
+<div class="rms-card p-0 overflow-hidden">
+    <div class="rms-table-responsive">
+        <table class="table rms-table align-middle">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">#</th>
+                    <th>Institution</th>
+                    <th>Submitting User</th>
+                    <th>Subject Title</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td class="fw-semibold text-dark">{{ ticket.institution.name }}</td>
+                    <td>{{ ticket.user.username }}</td>
+                    <td>
+                        <strong class="text-dark">{{ ticket.subject }}</strong>
+                        <p class="m-0 text-muted fs-7">{{ ticket.message|truncatewords:15 }}</p>
+                    </td>
+                    <td>
+                        {% if ticket.priority == 'HIGH' %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger">High</span>
+                        {% elif ticket.priority == 'MEDIUM' %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning">Medium</span>
+                        {% else %}
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary">Low</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if ticket.status == 'OPEN' %}
+                            <span class="badge bg-success bg-opacity-10 text-success">Open</span>
+                        {% else %}
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary">Closed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">No support tickets in queue.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

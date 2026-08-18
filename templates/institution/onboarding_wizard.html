@@ -1,0 +1,534 @@
+{% extends "base.html" %}
+
+{% block title %}Institution Onboarding Wizard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-lg-10">
+        
+        <!-- Onboarding Progress Header -->
+        <div class="rms-card p-4 text-center mb-4">
+            <h2 class="font-heading fw-bold">Institution Setup Wizard</h2>
+            <p class="text-muted mb-4">Follow the steps below to configure your academic structure and onboard students and faculty.</p>
+            
+            <div class="progress mb-4" style="height: 10px; border-radius: 5px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: {{ progress_percent }}%;" aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            
+            <ul class="wizard-steps d-flex justify-content-between p-0 m-0">
+                {% for i in "123456789" %}
+                    <li class="wizard-step {% if step == forloop.counter %}active{% elif onboarding_step > forloop.counter %}completed{% endif %}">
+                        <a href="?step={{ forloop.counter }}" class="text-decoration-none text-reset {% if onboarding_step < forloop.counter %}pe-none opacity-50{% endif %}">
+                            <div class="wizard-step-number">{{ forloop.counter }}</div>
+                            <span class="d-none d-md-inline" style="font-size: 0.75rem;">
+                                {% if forloop.counter == 1 %}Profile
+                                {% elif forloop.counter == 2 %}Session
+                                {% elif forloop.counter == 3 %}Depts
+                                {% elif forloop.counter == 4 %}Programs
+                                {% elif forloop.counter == 5 %}Semesters
+                                {% elif forloop.counter == 6 %}Subjects
+                                {% elif forloop.counter == 7 %}Faculty
+                                {% elif forloop.counter == 8 %}Students
+                                {% elif forloop.counter == 9 %}Grading
+                                {% endif %}
+                            </span>
+                        </a>
+                    </li>
+                {% endfor %}
+                <li class="wizard-step {% if step == 10 %}active{% endif %}">
+                    <a href="?step=10" class="text-decoration-none text-reset {% if onboarding_step < 10 %}pe-none opacity-50{% endif %}">
+                        <div class="wizard-step-number">10</div>
+                        <span class="d-none d-md-inline" style="font-size: 0.75rem;">Finish</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Wizard Step Body -->
+        <div class="rms-card p-4">
+            
+            <!-- Step 1: Institution Details -->
+            {% if step == 1 %}
+            <h4 class="mb-4 font-heading fw-semibold"><i class="bi bi-building me-2 text-primary"></i>Step 1: Institution Details</h4>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label fw-semibold">Institution Name</label>
+                        <input type="text" id="name" name="name" class="form-control" value="{{ institution.name }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="contact_phone" class="form-label fw-semibold">Contact Phone</label>
+                        <input type="text" id="contact_phone" name="contact_phone" class="form-control" value="{{ institution.contact_phone|default:'' }}">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label fw-semibold">Physical Address</label>
+                    <textarea id="address" name="address" class="form-control" rows="3">{{ institution.address|default:'' }}</textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="logo" class="form-label fw-semibold">Institution Logo</label>
+                    <input type="file" id="logo" name="logo" class="form-control">
+                    {% if institution.logo %}
+                        <div class="mt-2">
+                            <img src="{{ institution.logo.url }}" alt="Logo preview" height="50" class="rounded border">
+                        </div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary px-4 fw-semibold float-end">Save & Continue <i class="bi bi-chevron-right ms-1"></i></button>
+            </form>
+
+            <!-- Step 2: Academic Session -->
+            {% elif step == 2 %}
+            <h4 class="mb-4 font-heading fw-semibold"><i class="bi bi-calendar2-week me-2 text-primary"></i>Step 2: Academic Session</h4>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="session_name" class="form-label fw-semibold">Current Academic Session Name</label>
+                    <input type="text" id="session_name" name="session_name" class="form-control" placeholder="e.g., 2025-2026, Autumn-2025" value="{{ settings.current_session.name|default:'' }}" required>
+                    <small class="text-muted">This will be the active session for registering students, enrolling subjects, and publishing examinations.</small>
+                </div>
+                <button type="submit" class="btn btn-primary px-4 fw-semibold float-end">Save & Continue <i class="bi bi-chevron-right ms-1"></i></button>
+            </form>
+
+            <!-- Step 3: Departments -->
+            {% elif step == 3 %}
+            <h4 class="mb-4 font-heading fw-semibold"><i class="bi bi-diagram-3 me-2 text-primary"></i>Step 3: Add Departments</h4>
+            <form method="POST" class="mb-5">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="dept_name" class="form-label fw-semibold">Department Name</label>
+                        <input type="text" id="dept_name" name="dept_name" class="form-control" placeholder="e.g., Computer Science & Engineering" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="dept_code" class="form-label fw-semibold">Department Code</label>
+                        <input type="text" id="dept_code" name="dept_code" class="form-control" placeholder="e.g., CSE" required>
+                    </div>
+                    <div class="col-md-2 mb-3 d-flex align-items-end">
+                        <button type="submit" name="add_another" class="btn btn-outline-secondary w-100 fw-semibold"><i class="bi bi-plus-lg"></i> Add</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary px-4 fw-semibold float-end">Continue <i class="bi bi-chevron-right ms-1"></i></button>
+            </form>
+
+            {% if departments %}
+            <h5 class="fw-semibold mb-3 border-bottom pb-2">Registered Departments</h5>
+            <div class="rms-table-responsive">
+                <table class="table rms-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Code</th>
+                            <th>Department Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dept in departments %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ dept.code }}</span></td>
+                            <td>{{ dept.name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            <!-- Step 4: Programs -->
+            {% elif step == 4 %}
+            <h4 class="mb-4 font-heading fw-semibold"><i class="bi bi-award me-2 text-primary"></i>Step 4: Add Programs</h4>
+            <form method="POST" class="mb-5">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="department" class="form-label fw-semibold">Department</label>
+                        <select id="department" name="department" class="form-select" required>
+                            <option value="">Select Dept</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.id }}">{{ dept.code }} - {{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-5 mb-3">
+                        <label for="prog_name" class="form-label fw-semibold">Program Name</label>
+                        <input type="text" id="prog_name" name="prog_name" class="form-control" placeholder="e.g., Bachelor of Technology" required>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label for="prog_code" class="form-label fw-semibold">Program Code</label>
+                        <input type="text" id="prog_code" name="prog_code" class="form-control" placeholder="e.g., BTECH" required>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label for="duration_years" class="form-label fw-semibold">Duration (Years)</label>
+                        <input type="number" id="duration_years" name="duration_years" class="form-control" value="4" min="1" max="6" required>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button type="submit" name="add_another" class="btn btn-outline-secondary fw-semibold"><i class="bi bi-plus-lg"></i> Add & Add Another</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">Save & Continue <i class="bi bi-chevron-right ms-1"></i></button>
+                </div>
+            </form>
+
+            {% if programs %}
+            <h5 class="fw-semibold mb-3 border-bottom pb-2">Registered Programs</h5>
+            <div class="rms-table-responsive">
+                <table class="table rms-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Code</th>
+                            <th>Program Name</th>
+                            <th>Department</th>
+                            <th>Duration (Years)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prog in programs %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><span class="badge bg-secondary">{{ prog.code }}</span></td>
+                            <td>{{ prog.name }}</td>
+                            <td>{{ prog.department.code }}</td>
+                            <td>{{ prog.duration_years }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            <!-- Step 5: Semesters -->
+            {% elif step == 5 %}
+            <h4 class="mb-4 font-heading fw-semibold"><i class="bi bi-grid-3x3-gap me-2 text-primary"></i>Step 5: Generate Semesters</h4>
+            <p class="text-muted">Select the programs for which you want to automatically generate semesters (2 semesters per academic year).</p>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="rms-card p-3 bg-light mb-4">
+                    {% for prog in programs %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="programs" value="{{ prog.id }}" id="prog_{{ prog.id }}" checked>
+                            <label class="form-check-label fw-medium" for="prog_{{ prog.id }}">
+                                {{ prog.name }} ({{ prog.code }}) — {{ prog.duration_years }} Years (Creates {{ prog.duration_years|add:prog.duration_years }} Semesters)
+                            </label>
+                        </div>
+                    {% empty %}
+                        <p class="text-danger m-0">No programs registered. Go back to Step 4.</p>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary px-4 fw-semibold float-end" {% if not programs %}disabled{% endif %}>Generate & Continue <i class="bi bi-chevron-right ms-1"></i></button>
+            </form>
+
+            <!-- Step 6: Subjects -->
+            {% elif step == 6 %}
+            <h4 class="mb-4 font-heading fw-semibold"><i class="bi bi-journal-text me-2 text-primary"></i>Step 6: Add Subjects Catalog</h4>
+            <form method="POST" class="mb-5">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="program" class="form-label fw-semibold">Program</label>
+                        <select id="program" name="program" class="form-select" required>
+                            <option value="">Select Program</option>
+                            {% for prog in programs %}
+                                <option value="{{ prog.id }}">{{ prog.code }} - {{ prog.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="semester" class="form-label fw-semibold">Semester</label>
+                        <select id="semester" name="semester" class="form-select" required>
+                            <option value="">Select Semester</option>
+                            {% for sem in semesters %}
+                                <option value="{{ sem.id }}">{{ sem.program.code }} - Sem {{ sem.number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="sub_name" class="form-label fw-semibold">Subject Name</label>
+                        <input type="text" id="sub_name" name="sub_name" class="form-control" placeholder="e.g., Data Structures" required>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label for="sub_code" class="form-label fw-semibold">Subject Code</label>
+                        <input type="text" id="sub_code" name="sub_code" class="form-control" placeholder="e.g., CS-301" required>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-2">
+                        <label for="credits" class="form-label fw-semibold">Credits</label>
+                        <input type="number" id="credits" name="credits" class="form-control" value="4" min="1" max="10" required>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button type="submit" name="add_another" class="btn btn-outline-secondary fw-semibold"><i class="bi bi-plus-lg"></i> Add & Add Another</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">Continue <i class="bi bi-chevron-right ms-1"></i></button>
+                </div>
+            </form>
+
+            {% if subjects %}
+            <h5 class="fw-semibold mb-3 border-bottom pb-2">Registered Subjects</h5>
+            <div class="rms-table-responsive">
+                <table class="table rms-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Code</th>
+                            <th>Subject Name</th>
+                            <th>Program</th>
+                            <th>Semester</th>
+                            <th>Credits</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub in subjects %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><span class="badge bg-secondary">{{ sub.code }}</span></td>
+                            <td>{{ sub.name }}</td>
+                            <td>{{ sub.program.code }}</td>
+                            <td>Semester {{ sub.semester.number }}</td>
+                            <td>{{ sub.credits }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            <!-- Step 7: Faculty Directory -->
+            {% elif step == 7 %}
+            <h4 class="mb-4 font-heading fw-semibold"><i class="bi bi-person-workspace me-2 text-primary"></i>Step 7: Add Faculty</h4>
+            <form method="POST" class="mb-5">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="username" class="form-label fw-semibold">Username</label>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Login username" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="email" class="form-label fw-semibold">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="Faculty email" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="password" class="form-label fw-semibold">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Create password" required>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3">
+                        <label for="employee_id" class="form-label fw-semibold">Employee ID</label>
+                        <input type="text" id="employee_id" name="employee_id" class="form-control" placeholder="e.g., EMP101" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="department" class="form-label fw-semibold">Department</label>
+                        <select id="department" name="department" class="form-select" required>
+                            <option value="">Select Department</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.id }}">{{ dept.code }} - {{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="designation" class="form-label fw-semibold">Designation</label>
+                        <input type="text" id="designation" name="designation" class="form-control" placeholder="e.g., Assistant Professor" required>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button type="submit" name="add_another" class="btn btn-outline-secondary fw-semibold"><i class="bi bi-plus-lg"></i> Add & Add Another</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">Continue <i class="bi bi-chevron-right ms-1"></i></button>
+                </div>
+            </form>
+
+            {% if faculties %}
+            <h5 class="fw-semibold mb-3 border-bottom pb-2">Registered Faculty</h5>
+            <div class="rms-table-responsive">
+                <table class="table rms-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Designation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in faculties %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><span class="badge bg-secondary">{{ f.employee_id }}</span></td>
+                            <td>{{ f.user.get_full_name|default:f.user.username }}</td>
+                            <td>{{ f.department.code }}</td>
+                            <td>{{ f.designation }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            <!-- Step 8: Students Enrollment -->
+            {% elif step == 8 %}
+            <h4 class="mb-4 font-heading fw-semibold"><i class="bi bi-people me-2 text-primary"></i>Step 8: Add Students</h4>
+            <form method="POST" class="mb-5">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="username" class="form-label fw-semibold">Username</label>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Student username" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="email" class="form-label fw-semibold">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="Student email" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="password" class="form-label fw-semibold">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Create password" required>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <label for="student_id" class="form-label fw-semibold">Roll Number / Student ID</label>
+                        <input type="text" id="student_id" name="student_id" class="form-control" placeholder="e.g., ROLL2025-01" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="department" class="form-label fw-semibold">Department</label>
+                        <select id="department" name="department" class="form-select" required>
+                            <option value="">Select Dept</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.id }}">{{ dept.code }} - {{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="program" class="form-label fw-semibold">Program</label>
+                        <select id="program" name="program" class="form-select" required>
+                            <option value="">Select Program</option>
+                            {% for prog in programs %}
+                                <option value="{{ prog.id }}">{{ prog.code }} - {{ prog.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="semester" class="form-label fw-semibold">Current Semester</label>
+                        <select id="semester" name="semester" class="form-select" required>
+                            <option value="">Select Semester</option>
+                            {% for sem in semesters %}
+                                <option value="{{ sem.id }}">{{ sem.program.code }} - S{{ sem.number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button type="submit" name="add_another" class="btn btn-outline-secondary fw-semibold"><i class="bi bi-plus-lg"></i> Add & Add Another</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">Continue <i class="bi bi-chevron-right ms-1"></i></button>
+                </div>
+            </form>
+
+            {% if students %}
+            <h5 class="fw-semibold mb-3 border-bottom pb-2">Registered Students</h5>
+            <div class="rms-table-responsive">
+                <table class="table rms-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Roll Number</th>
+                            <th>Name</th>
+                            <th>Program</th>
+                            <th>Semester</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for st in students %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><span class="badge bg-secondary">{{ st.student_id }}</span></td>
+                            <td>{{ st.user.get_full_name|default:st.user.username }}</td>
+                            <td>{{ st.program.code }}</td>
+                            <td>Semester {{ st.semester.number }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            <!-- Step 9: Grading System -->
+            {% elif step == 9 %}
+            <h4 class="mb-4 font-heading fw-semibold"><i class="bi bi-percent me-2 text-primary"></i>Step 9: Grading System System</h4>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label for="passing_marks" class="form-label fw-semibold">Passing Threshold Marks (%)</label>
+                        <input type="number" id="passing_marks" name="passing_marks" class="form-control" value="{{ settings.passing_marks }}" required>
+                        <small class="text-muted">Students obtaining marks lower than this threshold will fail the subject and active backlogs will generate.</small>
+                    </div>
+                </div>
+                
+                <h5 class="fw-semibold border-bottom pb-2 mb-3">Letter Grade mappings</h5>
+                <div id="grades_wrapper">
+                    {% for grade, points in settings.grading_system.items %}
+                    <div class="row g-2 mb-2 grade-row align-items-center">
+                        <div class="col-5">
+                            <input type="text" name="grades[]" class="form-control" value="{{ grade }}" required>
+                        </div>
+                        <div class="col-5">
+                            <input type="number" name="points[]" class="form-control" step="0.1" value="{{ points }}" required>
+                        </div>
+                        <div class="col-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm border-0" onclick="this.closest('.grade-row').remove()"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm mb-4" onclick="addGradeRow()"><i class="bi bi-plus-lg"></i> Add Grade Row</button>
+                
+                <button type="submit" class="btn btn-primary px-4 fw-semibold float-end">Save & Continue <i class="bi bi-chevron-right ms-1"></i></button>
+            </form>
+
+            <script>
+                function addGradeRow() {
+                    const wrapper = document.getElementById('grades_wrapper');
+                    const row = document.createElement('div');
+                    row.className = 'row g-2 mb-2 grade-row align-items-center';
+                    row.innerHTML = `
+                        <div class="col-5">
+                            <input type="text" name="grades[]" class="form-control" placeholder="Grade (e.g. A+)" required>
+                        </div>
+                        <div class="col-5">
+                            <input type="number" name="points[]" class="form-control" step="0.1" placeholder="Point Value (e.g. 10.0)" required>
+                        </div>
+                        <div class="col-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm border-0" onclick="this.closest('.grade-row').remove()"><i class="bi bi-trash"></i></button>
+                        </div>
+                    `;
+                    wrapper.appendChild(row);
+                }
+            </script>
+
+            <!-- Step 10: Finish -->
+            {% elif step == 10 %}
+            <h4 class="mb-4 font-heading fw-semibold text-success"><i class="bi bi-check-circle me-2"></i>Step 10: Review & Activate</h4>
+            <div class="alert alert-info border-0 p-3 mb-4" style="border-radius: var(--radius-md);">
+                <i class="bi bi-info-circle-fill me-2 fs-5 align-middle"></i>
+                <span class="align-middle">Review the configurations completed during onboarding below before finalizing.</span>
+            </div>
+            
+            <ul class="list-group list-group-flush mb-4 rounded-3 border">
+                <li class="list-group-item d-flex justify-content-between"><strong>Institution:</strong> <span>{{ institution.name }}</span></li>
+                <li class="list-group-item d-flex justify-content-between"><strong>Academic Session:</strong> <span>{{ settings.current_session.name }}</span></li>
+                <li class="list-group-item d-flex justify-content-between"><strong>Default Passing Marks:</strong> <span>{{ settings.passing_marks }}%</span></li>
+            </ul>
+
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success px-5 py-2.5 fw-bold float-end" style="border-radius: var(--radius-md);">
+                    Finish Setup & Go to Dashboard <i class="bi bi-rocket-takeoff ms-1"></i>
+                </button>
+            </form>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

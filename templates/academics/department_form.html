@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="rms-card">
+            <h4 class="mb-4 font-heading fw-semibold border-bottom pb-2">{{ title }}</h4>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="name" class="form-label fw-semibold">Department Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Computer Science & Engineering" value="{{ department.name|default:'' }}" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="code" class="form-label fw-semibold">Department Code</label>
+                    <input type="text" id="code" name="code" class="form-control" placeholder="e.g. CSE" value="{{ department.code|default:'' }}" required>
+                    <small class="text-muted">Short uppercase identifier unique within your institution.</small>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                    <a href="{% url 'department_list' %}" class="btn btn-light fw-semibold">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">Save Department</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

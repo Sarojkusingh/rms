@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Create Exam Schedule{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="rms-card">
+            <h4 class="mb-4 font-heading fw-semibold border-bottom pb-2">Create Examination Schedule</h4>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <h5 class="text-primary font-heading mb-3" style="font-size: 1.1rem;"><i class="bi bi-info-circle me-2"></i>1. Basic Information</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label fw-semibold">Examination Name</label>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Autumn Semester Examinations 2025" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="exam_type" class="form-label fw-semibold">Examination Type</label>
+                        <select id="exam_type" name="exam_type" class="form-select" required>
+                            <option value="">Select Type</option>
+                            {% for code, label in exam_types %}
+                                <option value="{{ code }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label for="start_date" class="form-label fw-semibold">Start Date</label>
+                        <input type="date" id="start_date" name="start_date" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="end_date" class="form-label fw-semibold">End Date</label>
+                        <input type="date" id="end_date" name="end_date" class="form-control" required>
+                    </div>
+                </div>
+
+                <h5 class="text-primary font-heading mb-3 border-top pt-3" style="font-size: 1.1rem;"><i class="bi bi-mortarboard me-2"></i>2. Academic Target</h5>
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label for="program" class="form-label fw-semibold">Program</label>
+                        <select id="program" name="program" class="form-select" onchange="loadSubjectsForSchedule()" required>
+                            <option value="">Select Program</option>
+                            {% for prog in programs %}
+                                <option value="{{ prog.id }}">{{ prog.code }} - {{ prog.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="semester" class="form-label fw-semibold">Semester</label>
+                        <select id="semester" name="semester" class="form-select" onchange="loadSubjectsForSchedule()" required>
+                            <option value="">Select Semester</option>
+                            {% for sem in semesters %}
+                                <option value="{{ sem.id }}" data-program="{{ sem.program.id }}">{{ sem.program.code }} - S{{ sem.number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <h5 class="text-primary font-heading mb-3 border-top pt-3" style="font-size: 1.1rem;"><i class="bi bi-calendar-event me-2"></i>3. Subject Papers Schedule</h5>
+                <p class="text-muted fs-7">Select the program and semester above to load subjects list and enter paper date/time slots.</p>
+                
+                <div class="rms-table-responsive mb-4 d-none" id="schedule-table-container">
+                    <table class="table rms-table align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">Include</th>
+                                <th>Subject Code & Name</th>
+                                <th style="width: 150px;">Exam Date</th>
+                                <th style="width: 120px;">Start Time</th>
+                                <th style="width: 100px;">Duration (min)</th>
+                                <th style="width: 90px;">Max Marks</th>
+                                <th style="width: 90px;">Pass Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-tbody">
+                            <!-- JS populated rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                    <a href="{% url 'examination_list' %}" class="btn btn-light fw-semibold">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">Publish Examination Schedule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{ subjects_json|json_script:"subjects-raw-data" }}
+
+<script>
+    function loadSubjectsForSchedule() {
+        const progId = document.getElementById('program').value;
+        const semId = document.getElementById('semester').value;
+        const tableContainer = document.getElementById('schedule-table-container');
+        const tbody = document.getElementById('schedule-tbody');
+        
+        tbody.innerHTML = "";
+        
+        if (!progId || !semId) {
+            tableContainer.classList.add('d-none');
+            return;
+        }
+        
+        // Parse raw JSON from tag
+        const subjects = JSON.parse(document.getElementById('subjects-raw-data').textContent);
+        
+        // Filter subjects matching program and semester
+        const filteredSubjects = subjects.filter(sub => 
+            sub.program_id === parseInt(progId) && sub.semester_id === parseInt(semId)
+        );
+        
+        if (filteredSubjects.length === 0) {
+            tableContainer.classList.add('d-none');
+            alert("No subjects found cataloged for this Program and Semester. Add subjects first.");
+            return;
+        }
+        
+        tableContainer.classList.remove('d-none');
+        
+        // Build rows
+        filteredSubjects.forEach(sub => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <input class="form-check-input" type="checkbox" name="subjects[]" value="${sub.id}" checked>
+                </td>
+                <td>
+                    <span class="badge bg-secondary font-monospace mb-1">${sub.code}</span>
+                    <div class="fw-semibold">${sub.name}</div>
+                </td>
+                <td>
+                    <input type="date" name="dates[]" class="form-control form-control-sm" required>
+                </td>
+                <td>
+                    <input type="time" name="times[]" class="form-control form-control-sm" value="10:00" required>
+                </td>
+                <td>
+                    <input type="number" name="durations[]" class="form-control form-control-sm text-center" value="180" min="30" required>
+                </td>
+                <td>
+                    <input type="number" name="max_marks[]" class="form-control form-control-sm text-center" value="100" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="passing_marks[]" class="form-control form-control-sm text-center" value="40" min="1" required>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // Filter Semester Dropdown list to match program selection
+    function filterSemestersDropdown() {
+        const programSelect = document.getElementById('program');
+        const semesterSelect = document.getElementById('semester');
+        const selectedProgramId = programSelect.value;
+        
+        for (let i = 0; i < semesterSelect.options.length; i++) {
+            const option = semesterSelect.options[i];
+            if (option.value === "") continue;
+            
+            const progRef = option.getAttribute('data-program');
+            if (selectedProgramId === "" || progRef === selectedProgramId) {
+                option.style.display = "";
+            } else {
+                option.style.display = "none";
+            }
+        }
+        
+        // Reset selection if hidden
+        const selectedOption = semesterSelect.options[semesterSelect.selectedIndex];
+        if (selectedOption.value !== "" && selectedOption.style.display === "none") {
+            semesterSelect.value = "";
+            loadSubjectsForSchedule();
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('program').addEventListener('change', filterSemestersDropdown);
+    });
+</script>
+{% endblock %}

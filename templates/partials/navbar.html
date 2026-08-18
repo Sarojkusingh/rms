@@ -1,0 +1,105 @@
+<nav class="app-navbar no-print">
+    <div class="d-flex align-items-center">
+        <button class="btn btn-link text-dark d-md-none me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
+            <i class="bi bi-list fs-3"></i>
+        </button>
+        {% if current_institution %}
+            <div class="d-flex align-items-center">
+                {% if current_institution.logo %}
+                    <img src="{{ current_institution.logo.url }}" alt="{{ current_institution.name }} Logo" height="40" class="me-2 rounded">
+                {% else %}
+                    <div class="bg-primary text-white d-flex align-items-center justify-content-center rounded me-2" style="width: 40px; height: 40px; font-weight: bold;">
+                        {{ current_institution.name|slice:":2"|upper }}
+                    </div>
+                {% endif %}
+                <div>
+                    <h5 class="m-0 text-dark font-heading">{{ current_institution.name }}</h5>
+                    {% if institution_settings.current_session %}
+                        <small class="text-muted">Session: {{ institution_settings.current_session.name }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <h5 class="m-0 text-dark font-heading">RMS SaaS Platform</h5>
+        {% endif %}
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+        <!-- Light / Dark Toggle -->
+        <button class="theme-toggle-btn" id="theme-toggle" title="Toggle Theme">
+            <i class="bi bi-moon-fill"></i>
+        </button>
+
+        <!-- Notifications Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-link position-relative text-dark p-1" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-bell-fill fs-5"></i>
+                {% if unread_notifications_count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                        {{ unread_notifications_count }}
+                    </span>
+                {% endif %}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 py-0" aria-labelledby="notificationDropdown" style="width: 320px; max-height: 400px; overflow-y: auto; border-radius: var(--radius-lg);">
+                <li class="p-3 border-bottom d-flex align-items-center justify-content-between">
+                    <h6 class="m-0 font-heading">Notifications</h6>
+                    {% if unread_notifications_count > 0 %}
+                        <a href="{% url 'mark_all_notifications_read' %}" class="text-primary text-decoration-none" style="font-size: 0.8rem;">Mark all read</a>
+                    {% endif %}
+                </li>
+                {% if unread_notifications_list %}
+                    {% for notification in unread_notifications_list %}
+                        <li>
+                            <a class="dropdown-item p-3 border-bottom d-flex gap-3 text-wrap {% if not notification.is_read %}bg-light{% endif %}" href="{% url 'notification_detail' notification.id %}">
+                                <div class="bg-primary text-white d-flex align-items-center justify-content-center rounded-circle" style="width: 36px; height: 36px; flex-shrink: 0;">
+                                    <i class="bi bi-info-circle"></i>
+                                </div>
+                                <div>
+                                    <p class="m-0" style="font-size: 0.85rem; font-weight: 500;">{{ notification.title }}</p>
+                                    <p class="m-0 text-muted" style="font-size: 0.75rem;">{{ notification.message|truncatechars:50 }}</p>
+                                    <small class="text-muted" style="font-size: 0.65rem;">{{ notification.created_at|timesince }} ago</small>
+                                </div>
+                            </a>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="p-4 text-center text-muted">
+                        <i class="bi bi-bell-slash fs-2 mb-2 d-block"></i>
+                        <p class="m-0">No new notifications</p>
+                    </li>
+                {% endif %}
+                <li class="p-2 text-center border-top">
+                    <a href="{% url 'notifications_list' %}" class="text-primary text-decoration-none d-block w-100" style="font-size: 0.8rem; font-weight: 500;">View All Notifications</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- User Dropdown Menu -->
+        <div class="dropdown">
+            <button class="btn btn-link d-flex align-items-center text-decoration-none p-0 text-dark" type="button" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" width="36" height="36" class="rounded-circle border">
+                {% else %}
+                    <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center border" style="width: 36px; height: 36px; font-weight: 600;">
+                        {{ user.username|slice:":2"|upper }}
+                    </div>
+                {% endif %}
+                <span class="ms-2 d-none d-md-inline" style="font-size: 0.9rem; font-weight: 500;">{{ user.get_full_name|default:user.username }}</span>
+                <i class="bi bi-chevron-down ms-1" style="font-size: 0.7rem;"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="userProfileDropdown" style="border-radius: var(--radius-md);">
+                <li class="px-3 py-2 border-bottom">
+                    <p class="m-0" style="font-size: 0.85rem; font-weight: 600;">{{ user.get_full_name|default:user.username }}</p>
+                    <p class="m-0 text-muted" style="font-size: 0.75rem;">{{ user.get_role_display }}</p>
+                </li>
+                <li><a class="dropdown-item py-2" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i> My Profile</a></li>
+                {% if user.is_institution_admin %}
+                    <li><a class="dropdown-item py-2" href="{% url 'settings' %}"><i class="bi bi-gear me-2"></i> Settings</a></li>
+                {% endif %}
+                <li><a class="dropdown-item py-2" href="{% url 'change_password' %}"><i class="bi bi-key me-2"></i> Change Password</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item py-2 text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Institutions{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Manage Tenant Institutions</h2>
+    <p class="text-muted m-0">Suspend, activate, or update subscriptions and plans for institutions.</p>
+</div>
+
+<!-- Institutions List -->
+<div class="rms-card p-0 overflow-hidden">
+    <div class="rms-table-responsive">
+        <table class="table rms-table align-middle">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">#</th>
+                    <th>Institution Name</th>
+                    <th>Subdomain / ID</th>
+                    <th>Current Plan</th>
+                    <th>Owner Username</th>
+                    <th>Status</th>
+                    <th style="text-align: right; width: 320px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inst in institutions %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        <strong class="text-dark">{{ inst.name }}</strong>
+                        <small class="text-muted d-block">{{ inst.email }}</small>
+                    </td>
+                    <td><span class="badge bg-secondary font-monospace">{{ inst.subdomain }}</span></td>
+                    <td>
+                        <span class="badge bg-primary bg-opacity-10 text-primary">{{ inst.subscription.plan.name|default:"No Plan" }}</span>
+                    </td>
+                    <td>{{ inst.users.first.username }}</td>
+                    <td>
+                        {% if inst.is_active %}
+                            <span class="badge bg-success bg-opacity-10 text-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger">Suspended</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        <form method="POST" class="d-inline me-1">
+                            {% csrf_token %}
+                            <input type="hidden" name="institution_id" value="{{ inst.id }}">
+                            {% if inst.is_active %}
+                                <button type="submit" name="action" value="suspend" class="btn btn-outline-danger btn-sm fw-semibold" onclick="return confirm('Are you sure you want to suspend this institution?')">
+                                    Suspend
+                                </button>
+                            {% else %}
+                                <button type="submit" name="action" value="activate" class="btn btn-outline-success btn-sm fw-semibold">
+                                    Activate
+                                </button>
+                            {% endif %}
+                        </form>
+                        
+                        <!-- Change Plan Trigger Form -->
+                        <form method="POST" class="d-inline-flex gap-1 align-items-center">
+                            {% csrf_token %}
+                            <input type="hidden" name="institution_id" value="{{ inst.id }}">
+                            <input type="hidden" name="action" value="change_plan">
+                            
+                            <select name="plan" class="form-select form-select-sm" style="width: 130px;" onchange="this.form.submit()">
+                                <option value="">Upgrade Plan</option>
+                                {% for plan in plans %}
+                                    <option value="{{ plan.id }}">{{ plan.name }}</option>
+                                    {% endfor %}
+                            </select>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">No institutions registered on the platform.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

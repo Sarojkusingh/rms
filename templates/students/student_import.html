@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Import Students Directory{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="rms-card">
+            <h4 class="mb-4 font-heading fw-semibold border-bottom pb-2">Import Students Wizard</h4>
+
+            <!-- STEP 1: Upload Stage -->
+            {% if stage == 'upload' %}
+            <div class="mb-4 alert alert-info border-0 p-3" style="border-radius: var(--radius-md);">
+                <h6 class="fw-semibold"><i class="bi bi-info-circle-fill me-2 fs-5 align-middle"></i>Instructions:</h6>
+                <p class="m-0 fs-7">Please upload a spreadsheet containing the student database. The file must be in <strong>.xlsx</strong> or <strong>.csv</strong> format, containing exactly the following header columns (case-insensitive):</p>
+                <code class="d-block bg-white p-2 mt-2 border rounded font-monospace" style="font-size: 0.85rem;">
+                    username, email, password, student_id, first_name, last_name, dept_code, program_code, semester
+                </code>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="upload_file">
+                
+                <div class="mb-4">
+                    <label for="file" class="form-label fw-semibold">Choose spreadsheet file</label>
+                    <input type="file" id="file" name="file" class="form-control" required>
+                    <small class="text-muted">Max file size: 5 MB.</small>
+                </div>
+                
+                <div class="d-flex justify-content-between border-top pt-3">
+                    <a href="{% url 'student_list' %}" class="btn btn-light fw-semibold">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">Upload & Validate</button>
+                </div>
+            </form>
+
+            <!-- STEP 2: Error List Stage -->
+            {% elif stage == 'errors' %}
+            <div class="alert alert-danger border-0 p-3 mb-4" style="border-radius: var(--radius-md);">
+                <h6 class="fw-semibold"><i class="bi bi-exclamation-triangle-fill me-2 fs-5 align-middle"></i>Import Blocked: Validation Errors Found</h6>
+                <p class="m-0 fs-7">We found data formatting issues or database conflicts in your uploaded file. You must fix these errors in your file and try uploading again.</p>
+            </div>
+
+            <div class="rms-table-responsive mb-4">
+                <table class="table rms-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;">Row Number</th>
+                            <th>Formatting / Conflict Errors</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for err in errors %}
+                        <tr>
+                            <td class="fw-bold text-danger">Row {{ err.row }}</td>
+                            <td>
+                                <ul class="m-0 text-danger" style="font-size: 0.85rem;">
+                                    {% for msg in err.msgs %}
+                                        <li>{{ msg }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-start border-top pt-3">
+                <a href="{% url 'student_import' %}" class="btn btn-outline-secondary fw-semibold"><i class="bi bi-arrow-left"></i> Upload Another File</a>
+            </div>
+
+            <!-- STEP 3: Preview and Confirm Stage -->
+            {% elif stage == 'preview' %}
+            <div class="alert alert-success border-0 p-3 mb-4" style="border-radius: var(--radius-md);">
+                <h6 class="fw-semibold"><i class="bi bi-check-circle-fill me-2 fs-5 align-middle"></i>File Validated Successfully!</h6>
+                <p class="m-0 fs-7">We verified all {{ preview_records|length }} student rows. Please preview the list below and click <strong>Confirm Import</strong> to save records to the database.</p>
+            </div>
+
+            <div class="rms-table-responsive mb-4" style="max-height: 400px; overflow-y: auto;">
+                <table class="table rms-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Roll / ID</th>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Email Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rec in preview_records %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><span class="badge bg-secondary font-monospace">{{ rec.student_id }}</span></td>
+                            <td class="fw-medium">{{ rec.username }}</td>
+                            <td>{{ rec.first_name }} {{ rec.last_name }}</td>
+                            <td>{{ rec.email }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="confirm_import">
+                
+                <div class="d-flex justify-content-between border-top pt-3">
+                    <a href="{% url 'student_import' %}" class="btn btn-outline-secondary fw-semibold"><i class="bi bi-arrow-left"></i> Back</a>
+                    <button type="submit" class="btn btn-success px-4 fw-semibold">Confirm Import <i class="bi bi-check-lg ms-1"></i></button>
+                </div>
+            </form>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

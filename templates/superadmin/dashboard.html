@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}SuperAdmin Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Platform SuperAdmin Dashboard</h2>
+    <p class="text-muted m-0">Global overview of institutions, subscriptions, billing ledgers, and operations.</p>
+</div>
+
+<!-- Platform KPIs -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">TOTAL INSTITUTIONS</small>
+            <span class="fs-2 fw-bold text-primary">{{ total_institutions }}</span>
+            <a href="{% url 'superadmin_institutions' %}" class="d-block mt-2 fs-7 text-decoration-none">Manage Tenants →</a>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">TOTAL STUDENTS ON PLATFORM</small>
+            <span class="fs-2 fw-bold text-success">{{ total_students }}</span>
+            <span class="d-block mt-2 fs-7 text-muted">Across all tenants</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">TOTAL REGISTERED FACULTY</small>
+            <span class="fs-2 fw-bold text-dark">{{ total_faculty }}</span>
+            <span class="d-block mt-2 fs-7 text-muted">Across all tenants</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm bg-success bg-opacity-10 border-success border-opacity-25">
+            <small class="text-success fw-semibold d-block mb-1">MONTHLY RECURRING REVENUE</small>
+            <span class="fs-2 fw-bold text-success">₹{{ mrr|floatformat:2 }}</span>
+            <a href="{% url 'superadmin_payments' %}" class="d-block mt-2 fs-7 text-decoration-none">View Ledger →</a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Tenant Control Panel Quick Links -->
+    <div class="col-lg-5">
+        <div class="rms-card p-4 h-100">
+            <h5 class="fw-bold font-heading mb-4 border-bottom pb-2">Global SaaS Control Panel</h5>
+            <div class="d-grid gap-2">
+                <a href="{% url 'superadmin_institutions' %}" class="btn btn-outline-primary py-3 fw-semibold text-start shadow-sm">
+                    <i class="bi bi-building fs-4 me-2 align-middle"></i> Manage Tenant Institutions
+                </a>
+                <a href="{% url 'superadmin_plans' %}" class="btn btn-outline-primary py-3 fw-semibold text-start shadow-sm">
+                    <i class="bi bi-tags fs-4 me-2 align-middle"></i> Pricing Plans & Limits
+                </a>
+                <a href="{% url 'superadmin_subscriptions' %}" class="btn btn-outline-primary py-3 fw-semibold text-start shadow-sm">
+                    <i class="bi bi-clock-history fs-4 me-2 align-middle"></i> Subscriptions Log
+                </a>
+                <a href="{% url 'superadmin_support' %}" class="btn btn-outline-primary py-3 fw-semibold text-start shadow-sm">
+                    <i class="bi bi-chat-left-text fs-4 me-2 align-middle"></i> Platform Support Queue
+                </a>
+                <a href="{% url 'superadmin_audit' %}" class="btn btn-outline-primary py-3 fw-semibold text-start shadow-sm">
+                    <i class="bi bi-shield-check fs-4 me-2 align-middle"></i> Global Audit Trails
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Recent platform-wide activity logs -->
+    <div class="col-lg-7">
+        <div class="rms-card p-4">
+            <h5 class="fw-bold font-heading mb-3 border-bottom pb-2">Recent Global Audit Activity</h5>
+            {% if recent_activity %}
+                <ul class="list-group list-group-flush" style="font-size: 0.85rem;">
+                    {% for log in recent_activity %}
+                    <li class="list-group-item px-0">
+                        <div class="d-flex justify-content-between">
+                            <strong class="text-dark">{{ log.user.get_full_name|default:log.user.username }}</strong>
+                            <small class="text-muted">{{ log.created_at|date:"d M H:i" }}</small>
+                        </div>
+                        <p class="m-0 text-muted">{{ log.action }} <span class="badge bg-secondary font-monospace">{{ log.module }}</span></p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted text-center py-4">No global audit logs found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

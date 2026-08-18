@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Exam Controller Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="font-heading fw-bold m-0">Exam Controller Cell</h2>
+    <p class="text-muted m-0">Welcome back. Manage examination schedules, verify student marks, and process final results.</p>
+</div>
+
+<!-- Quick Statistics -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="rms-card p-3 mb-0 text-center shadow-sm">
+            <small class="text-muted d-block mb-1">TOTAL PUBLISHED EXAMS</small>
+            <span class="fs-2 fw-bold text-dark">{{ total_exams }}</span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="rms-card p-3 mb-0 text-center bg-primary bg-opacity-10 shadow-sm">
+            <small class="text-primary fw-medium d-block mb-1">ACTIVE RUNNING EXAMS</small>
+            <span class="fs-2 fw-bold text-primary">{{ active_exams.count }}</span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="rms-card p-3 mb-0 text-center bg-danger bg-opacity-10 shadow-sm">
+            <small class="text-danger fw-medium d-block mb-1">ACTIVE STUDENT BACKLOGS</small>
+            <span class="fs-2 fw-bold text-danger">{{ active_backlogs }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Pending Marks Locking -->
+    <div class="col-lg-6">
+        <div class="rms-card p-4 h-100 d-flex flex-column">
+            <h5 class="fw-bold font-heading mb-3 border-bottom pb-2">Pending Marks Locking</h5>
+            <p class="text-muted fs-7 mb-3">Marks sheets reviewed and approved by HODs that need to be officially Locked before processing results.</p>
+            
+            {% if pending_locks %}
+                <ul class="list-group list-group-flush mb-4">
+                    {% for item in pending_locks %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <span class="badge bg-secondary font-monospace">{{ item.subject__code }}</span>
+                            <span class="fw-medium text-dark ms-2">{{ item.subject__name }}</span>
+                        </div>
+                        <span class="badge bg-danger rounded-pill">{{ item.count }} Students</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'controller_marks_verification' %}" class="btn btn-primary fw-semibold mt-auto w-100 py-2">
+                    Review and Lock Marks Sheets <i class="bi bi-shield-lock-fill ms-1"></i>
+                </a>
+            {% else %}
+                <div class="text-center py-4 text-muted my-auto">
+                    <i class="bi bi-shield-check text-success fs-1"></i>
+                    <p class="mt-2 mb-0 fw-semibold">All approved marks sheets are locked</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Column: Control Cell Actions -->
+    <div class="col-lg-6">
+        <div class="rms-card p-4">
+            <h5 class="fw-bold font-heading mb-3 border-bottom pb-2">Result & Exam Controls</h5>
+            <div class="d-grid gap-2">
+                <a href="{% url 'examination_create' %}" class="btn btn-outline-primary py-3 fw-semibold text-start shadow-sm">
+                    <i class="bi bi-calendar-plus fs-4 me-2 align-middle"></i> Create Examination Schedule
+                </a>
+                <a href="{% url 'results_process' %}" class="btn btn-outline-primary py-3 fw-semibold text-start shadow-sm">
+                    <i class="bi bi-cpu fs-4 me-2 align-middle"></i> Process Student Results
+                </a>
+                <a href="{% url 'reports' %}" class="btn btn-outline-primary py-3 fw-semibold text-start shadow-sm">
+                    <i class="bi bi-file-earmark-spreadsheet fs-4 me-2 align-middle"></i> Open Reports and Exporters
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
