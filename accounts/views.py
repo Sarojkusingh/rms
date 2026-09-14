@@ -2,12 +2,20 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.conf import settings
 from tenants.models import Institution, InstitutionSettings
 from subscriptions.models import Plan, Subscription, Usage
 from audit.models import AuditLog
 from .forms import LoginForm, UserProfileForm, InstitutionRegisterForm
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 import datetime
 
 User = get_user_model()
@@ -196,16 +204,114 @@ def change_password_view(request):
 
 def forgot_password_view(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        email = request.POST.get('email', '').strip()
+        
+        # Always show success message to prevent email enumeration
         messages.success(request, f"If an account is associated with {email}, a password reset link has been sent.")
+        
+        # Look up user by email
+        try:
+            user = User.objects.get(email=email, is_active=True)
+        except User.DoesNotExist:
+            # Don't reveal that the email doesn't exist
+            return redirect('login')
+        
+        # Generate token and uid
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        
+        # Build reset URL
+        reset_url = request.build_absolute_uri(f'/reset-password/{uid}/{token}/')
+        
+        # Render email content
+        email_html = render_to_string('auth/password_reset_email.html', {
+            'user': user,
+            'reset_url': reset_url,
+            'expiry_hours': 1,
+        })
+        
+        # Send email
+        try:
+            send_mail(
+                subject='RMS SaaS — Password Reset Request',
+                message=f'Hi {user.get_full_name() or user.username}, use this link to reset your password: {reset_url}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=email_html,
+                fail_silently=False,
+            )
+        except Exception:
+            # Log failure but don't expose it to the user
+            pass
+        
+        # Audit log
+        AuditLog.objects.create(
+            institution=user.institution,
+            user=user,
+            user_role=user.get_role_display(),
+            action="Requested password reset email.",
+            module="AUTH",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
+        
         return redirect('login')
     return render(request, 'auth/forgot_password.html')
 
 def reset_password_view(request, uidb64=None, token=None):
+    # Validate uidb64 and token
+    valid_link = False
+    user = None
+    
+    if uidb64 and token:
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+            valid_link = default_token_generator.check_token(user, token)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            valid_link = False
+    
+    if not valid_link:
+        return render(request, 'auth/reset_password.html', {
+            'valid_link': False,
+        })
+    
+    errors = []
     if request.method == 'POST':
-        messages.success(request, "Your password has been successfully reset. Please log in with your new password.")
-        return redirect('login')
-    return render(request, 'auth/reset_password.html')
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+        
+        if not password:
+            errors.append("Password is required.")
+        elif password != confirm_password:
+            errors.append("Passwords do not match.")
+        else:
+            # Validate password against Django validators
+            try:
+                validate_password(password, user=user)
+            except ValidationError as e:
+                errors.extend(e.messages)
+        
+        if not errors:
+            user.set_password(password)
+            user.save()
+            
+            # Audit log
+            AuditLog.objects.create(
+                institution=user.institution,
+                user=user,
+                user_role=user.get_role_display(),
+                action="Password reset via email link.",
+                module="AUTH",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
+            
+            messages.success(request, "Your password has been successfully reset. Please log in with your new password.")
+            return redirect('login')
+    
+    return render(request, 'auth/reset_password.html', {
+        'valid_link': True,
+        'errors': errors,
+    })
 
 def home_view(request):
     if request.user.is_authenticated:

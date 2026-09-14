@@ -80,3 +80,76 @@ async function sendAjaxRequest(url, data, method = 'POST') {
         return { success: false, error: 'Connection failure' };
     }
 }
+
+// 5. Password Visibility Toggle
+function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'bi bi-eye';
+    }
+}
+
+// 6. Password Strength Indicator
+function updatePasswordStrength(password, fillEl, textEl) {
+    if (!fillEl || !textEl) return;
+    
+    if (!password) {
+        fillEl.style.width = '0%';
+        fillEl.removeAttribute('data-level');
+        textEl.textContent = '';
+        textEl.removeAttribute('data-level');
+        return;
+    }
+    
+    let score = 0;
+    
+    // Length checks
+    if (password.length >= 8) score++;
+    if (password.length >= 12) score++;
+    
+    // Character variety checks
+    if (/[a-z]/.test(password)) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^a-zA-Z0-9]/.test(password)) score++;
+    
+    let level, label;
+    if (score <= 2) {
+        level = 'weak';
+        label = 'Weak — add more characters and variety';
+    } else if (score <= 3) {
+        level = 'fair';
+        label = 'Fair — try adding numbers or symbols';
+    } else if (score <= 4) {
+        level = 'good';
+        label = 'Good — almost there!';
+    } else {
+        level = 'strong';
+        label = 'Strong password ✓';
+    }
+    
+    fillEl.setAttribute('data-level', level);
+    textEl.setAttribute('data-level', level);
+    textEl.textContent = label;
+}
+
+// Auto-initialize password toggles and strength indicators on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Password strength: bind to inputs with data-strength-target attribute
+    document.querySelectorAll('[data-strength-target]').forEach(input => {
+        const targetId = input.getAttribute('data-strength-target');
+        const fillEl = document.querySelector(`#${targetId} .password-strength-fill`);
+        const textEl = document.querySelector(`#${targetId} .password-strength-text`);
+        
+        input.addEventListener('input', () => {
+            updatePasswordStrength(input.value, fillEl, textEl);
+        });
+    });
+});

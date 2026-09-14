@@ -67,14 +67,28 @@
                 <div class="row mb-4">
                     <div class="col-md-6 mb-3">
                         <label for="id_password" class="form-label fw-medium">Password</label>
-                        {{ form.password }}
+                        <div class="password-wrapper">
+                            {{ form.password }}
+                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('id_password', this)" aria-label="Toggle password visibility">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                         {% if form.password.errors %}
                             <div class="text-danger mt-1 small">{{ form.password.errors.as_text }}</div>
                         {% endif %}
+                        <div class="password-strength" id="register-pw-strength">
+                            <div class="password-strength-bar"><div class="password-strength-fill"></div></div>
+                            <div class="password-strength-text"></div>
+                        </div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="id_password_confirm" class="form-label fw-medium">Confirm Password</label>
-                        {{ form.password_confirm }}
+                        <div class="password-wrapper">
+                            {{ form.password_confirm }}
+                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('id_password_confirm', this)" aria-label="Toggle password visibility">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                         {% if form.password_confirm.errors %}
                             <div class="text-danger mt-1 small">{{ form.password_confirm.errors.as_text }}</div>
                         {% endif %}
@@ -95,4 +109,19 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const pwInput = document.getElementById('id_password');
+        if (pwInput) {
+            const fillEl = document.querySelector('#register-pw-strength .password-strength-fill');
+            const textEl = document.querySelector('#register-pw-strength .password-strength-text');
+            pwInput.addEventListener('input', () => {
+                updatePasswordStrength(pwInput.value, fillEl, textEl);
+            });
+        }
+    });
+</script>
 {% endblock %}

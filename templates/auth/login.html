@@ -30,7 +30,12 @@
                 
                 <div class="mb-3">
                     <label for="id_password" class="form-label fw-medium">Password</label>
-                    {{ form.password }}
+                    <div class="password-wrapper">
+                        {{ form.password }}
+                        <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('id_password', this)" aria-label="Toggle password visibility">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
                     {% if form.password.errors %}
                         <div class="text-danger mt-1 small">{{ form.password.errors.as_text }}</div>
                     {% endif %}

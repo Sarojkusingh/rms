@@ -351,3 +351,107 @@ h1, h2, h3, h4, h5, h6 {
     background-color: var(--bg-primary);
     color: var(--text-primary);
 }
+
+/* Password Field Toggle */
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper .form-control {
+    padding-right: 2.75rem;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1.1rem;
+    z-index: 5;
+    transition: color var(--transition-fast);
+}
+
+.password-toggle-btn:hover {
+    color: var(--primary);
+}
+
+/* Password Strength Indicator */
+.password-strength {
+    margin-top: 0.5rem;
+}
+
+.password-strength-bar {
+    height: 4px;
+    background-color: var(--border-color);
+    border-radius: 2px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.password-strength-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+    transition: width 0.4s ease, background-color 0.4s ease;
+}
+
+.password-strength-fill[data-level="weak"] {
+    width: 25%;
+    background-color: var(--danger);
+}
+
+.password-strength-fill[data-level="fair"] {
+    width: 50%;
+    background-color: var(--warning);
+}
+
+.password-strength-fill[data-level="good"] {
+    width: 75%;
+    background-color: var(--info);
+}
+
+.password-strength-fill[data-level="strong"] {
+    width: 100%;
+    background-color: var(--success);
+}
+
+.password-strength-text {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.password-strength-text[data-level="weak"] {
+    color: var(--danger);
+}
+
+.password-strength-text[data-level="fair"] {
+    color: var(--warning);
+}
+
+.password-strength-text[data-level="good"] {
+    color: var(--info);
+}
+
+.password-strength-text[data-level="strong"] {
+    color: var(--success);
+}
+
+/* Reset Password Error State */
+.reset-error-card {
+    border: 1px solid var(--danger);
+    background-color: rgba(239, 68, 68, 0.03);
+}
+
+.reset-error-card .bi-shield-x {
+    color: var(--danger);
+}

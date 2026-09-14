@@ -133,3 +133,17 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
+
+# Email Configuration
+# Uses console backend in development (emails printed to terminal)
+# Switch to SMTP for production by setting EMAIL_BACKEND in .env
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'RMS SaaS <noreply@rmssaas.com>')
+
+# Password reset token expires in 1 hour
+PASSWORD_RESET_TIMEOUT = 3600
